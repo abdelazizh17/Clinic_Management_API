@@ -3,7 +3,7 @@ using Clinic_Management_API.Core.Enums;
 
 namespace Clinic_Management_API.Core.DTOs.AppointmentDTOs
 {
-    public class AppointmentCreateDto
+    public class CreateAppointmentDto
     {
         public DateTime AppointmentDate { get; set; }
         public TimeOnly StartTime { get; set; }

@@ -3,7 +3,7 @@ using Clinic_Management_API.Core.Entities;
 
 namespace Clinic_Management_API.Core.DTOs.PrescriptionDTOs
 {
-    public class PrescriptionCreateDto
+    public class CreatePrescriptionDto
     {
         public int PatientId { get; set; }
         public int DoctorId { get; set; }

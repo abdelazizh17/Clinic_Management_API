@@ -3,7 +3,7 @@ using Clinic_Management_API.Core.Enums;
 
 namespace Clinic_Management_API.Core.DTOs.AppointmentDTOs
 {
-    public class AppointmentUpdateDto
+    public class UpdateAppointmentDto
     {
         public int Id { get; set; }
         public DateTime AppointmentDate { get; set; }

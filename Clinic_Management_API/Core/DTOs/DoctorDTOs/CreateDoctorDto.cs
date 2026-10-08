@@ -2,7 +2,7 @@
 
 namespace Clinic_Management_API.Core.DTOs.DoctorDTOs
 {
-    public class DoctorCreateDto
+    public class CreateDoctorDto
     {
         public string FullName { get; set; } = null!;
         public string Phone { get; set; } = null!;

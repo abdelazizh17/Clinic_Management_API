@@ -2,8 +2,9 @@
 
 namespace Clinic_Management_API.Core.DTOs.PatientDTOs
 {
-    public class PatientCreateDto
+    public class UpdatePatientDto
     {
+        public int Id { get; set; }
         public string FullName { get; set; } = null!;
         public DateTime DateOfBirth { get; set; }
         public Gender Gender { get; set; }
