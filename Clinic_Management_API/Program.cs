@@ -1,4 +1,5 @@
 
+using Clinic_Management_API.Core.Mappings;
 using Clinic_Management_API.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 
@@ -23,6 +24,8 @@ namespace Clinic_Management_API
             {
                 option.UseSqlServer(builder.Configuration.GetConnectionString("cs"));
             });
+
+            builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(PatientProfile).Assembly));
 
             var app = builder.Build();
 

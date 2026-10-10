@@ -1,7 +1,7 @@
 ﻿using Clinic_Management_API.Core.DTOs;
 using Clinic_Management_API.Core.DTOs.SpecialtyDTOs;
 
-namespace Clinic_Management_API.Core.Interfaces
+namespace Clinic_Management_API.Core.Interfaces.Services
 {
     public interface ISpecialtyService
     {
