@@ -12,7 +12,7 @@ namespace Clinic_Management_API.Core.Mappings
 
             CreateMap<UpdatePatientDto, Patient>()
                 .ReverseMap()
-                .ForAllMembers(option => option.Condition((src, dest, srcMember) => srcMember != null);
+                .ForAllMembers(option => option.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<PatientResponseDto, Patient>().ReverseMap();
 
