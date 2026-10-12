@@ -146,6 +146,9 @@ namespace Clinic_Management_API.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Medications");
                 });
 

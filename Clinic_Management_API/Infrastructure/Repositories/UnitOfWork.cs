@@ -15,6 +15,8 @@ namespace Clinic_Management_API.Infrastructure.Repositories
 
         public IPrescriptionRepository Prescriptions { get; private set; }
 
+        public ISpecialtyRepository Specialties { get; private set; }
+
         public UnitOfWork(ClinicDBContext context)
         {
             _context = context;
@@ -23,6 +25,7 @@ namespace Clinic_Management_API.Infrastructure.Repositories
             Appointments = new AppointmentRepository(_context);
             Medications = new MedicationRepository(_context);
             Prescriptions = new PrescriptionRepository(_context);
+            Specialties = new SpecialtyRepository(_context);
         }
 
         public async Task<int> CompleteAsync() => await _context.SaveChangesAsync();

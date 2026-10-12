@@ -10,6 +10,8 @@ namespace Clinic_Management_API.Infrastructure.Data
 
             builder.Property(m => m.Name).HasMaxLength(50);
 
+            builder.HasIndex(m => m.Name).IsUnique();
+
             builder.Property(m => m.Description).HasMaxLength(200);
 
             builder.Property(m => m.Price).HasPrecision(10,2);

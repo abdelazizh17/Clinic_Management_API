@@ -119,6 +119,16 @@ namespace Clinic_Management_API.Core.Services
                 throw new InvalidOperationException("Medication not exists.");
             }
 
+            if (!string.IsNullOrEmpty(dto.Name) && !medicationEntity.Name.Equals(dto.Name,StringComparison.OrdinalIgnoreCase))
+            {
+                var nameExists = await _unitOfWork.Medications.IsMedicationNameExistAsync(dto.Name);
+                if (nameExists)
+                {
+                    _logger.LogWarning($"Update failed. Medication name '{dto.Name}' already exists.");
+                    throw new InvalidOperationException($"Medication with name '{dto.Name}' already exists.");
+                }
+            }
+
             _mapper.Map(dto, medicationEntity);
 
             _unitOfWork.Medications.Update(medicationEntity);

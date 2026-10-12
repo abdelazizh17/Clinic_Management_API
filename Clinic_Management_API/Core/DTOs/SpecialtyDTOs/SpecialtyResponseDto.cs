@@ -1,5 +1,4 @@
 ﻿using Clinic_Management_API.Core.DTOs.DoctorDTOs;
-using Clinic_Management_API.Core.Entities;
 
 namespace Clinic_Management_API.Core.DTOs.SpecialtyDTOs
 {
