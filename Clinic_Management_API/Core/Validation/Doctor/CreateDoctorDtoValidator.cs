@@ -25,7 +25,7 @@ namespace Clinic_Management_API.Core.Validation.Doctor
                 .PrecisionScale(8, 2, false).WithMessage("Consultation fee must have at most 2 decimal places.");
 
             RuleFor(d => d.SpecialtyId)
-                .GreaterThan(0).WithMessage("Valid Specialty ID is required");
+                .GreaterThan(0).WithMessage("Specialty ID is required");
         }
     }
 }

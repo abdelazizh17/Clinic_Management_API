@@ -1,5 +1,5 @@
-﻿using Clinic_Management_API.Core.DTOs;
-using Clinic_Management_API.Core.DTOs.DoctorDTOs;
+﻿using Clinic_Management_API.Core.DTOs.DoctorDTOs;
+using Clinic_Management_API.Core.DTOs.FilterDTOs;
 
 namespace Clinic_Management_API.Core.Interfaces.Services
 {

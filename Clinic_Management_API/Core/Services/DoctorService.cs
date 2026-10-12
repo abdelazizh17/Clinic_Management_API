@@ -1,10 +1,8 @@
-﻿using AutoMapper;
-using Clinic_Management_API.Core.DTOs;
-using Clinic_Management_API.Core.DTOs.DoctorDTOs;
+﻿using Clinic_Management_API.Core.DTOs.DoctorDTOs;
+using Clinic_Management_API.Core.DTOs.FilterDTOs;
 using Clinic_Management_API.Core.Entities;
 using Clinic_Management_API.Core.Interfaces.Repositories;
 using Clinic_Management_API.Core.Interfaces.Services;
-using System.Linq.Expressions;
 
 namespace Clinic_Management_API.Core.Services
 {

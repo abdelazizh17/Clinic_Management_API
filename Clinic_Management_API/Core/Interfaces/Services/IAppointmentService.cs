@@ -1,5 +1,5 @@
-﻿using Clinic_Management_API.Core.DTOs;
-using Clinic_Management_API.Core.DTOs.AppointmentDTOs;
+﻿using Clinic_Management_API.Core.DTOs.AppointmentDTOs;
+using Clinic_Management_API.Core.DTOs.FilterDTOs;
 
 namespace Clinic_Management_API.Core.Interfaces.Services
 {
@@ -9,7 +9,7 @@ namespace Clinic_Management_API.Core.Interfaces.Services
         Task<bool> UpdateAsync(int id, UpdateAppointmentDto dto);
         Task<bool> DeleteAsync(int id);
         Task<AppointmentResponseDto?> GetByIdAsync(int id);
-        Task<IReadOnlyList<AppointmentResponseDto>> GetAllAsync(BaseFilterDto filter);
+        Task<IReadOnlyList<AppointmentResponseDto>> GetAllAsync(AppointmentFilterDto filter);
         Task<IReadOnlyList<AppointmentResponseDto>> GetDoctorAppointmentsAsync(int doctorId, DateTime dateTime);
         Task<bool> ChangeStatusAsync(int AppointmentId,int Status);
     }

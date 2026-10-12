@@ -1,10 +1,10 @@
-﻿using Clinic_Management_API.Core.DTOs;
-using Clinic_Management_API.Core.DTOs.PatientDTOs;
+﻿using Clinic_Management_API.Core.DTOs.PatientDTOs;
 using Clinic_Management_API.Core.Interfaces.Repositories;
 using Clinic_Management_API.Core.Interfaces.Services;
 using AutoMapper;
 using Clinic_Management_API.Core.Entities;
 using System.Linq.Expressions;
+using Clinic_Management_API.Core.DTOs.FilterDTOs;
 namespace Clinic_Management_API.Core.Services
 {
     public class PatientService : IPatientService

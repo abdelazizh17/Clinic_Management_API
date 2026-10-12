@@ -1,4 +1,4 @@
-﻿using Clinic_Management_API.Core.DTOs;
+﻿using Clinic_Management_API.Core.DTOs.FilterDTOs;
 using Clinic_Management_API.Core.DTOs.SpecialtyDTOs;
 
 namespace Clinic_Management_API.Core.Interfaces.Services

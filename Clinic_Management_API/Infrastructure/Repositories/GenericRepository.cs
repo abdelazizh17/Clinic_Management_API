@@ -1,8 +1,5 @@
-﻿using Clinic_Management_API.Core.Entities;
-using Clinic_Management_API.Core.Interfaces.Repositories;
+﻿using Clinic_Management_API.Core.Interfaces.Repositories;
 using Clinic_Management_API.Infrastructure.Data;
-using System.Linq.Expressions;
-
 namespace Clinic_Management_API.Infrastructure.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
