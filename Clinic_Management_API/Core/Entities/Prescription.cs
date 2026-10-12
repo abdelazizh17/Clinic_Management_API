@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
+﻿
 namespace Clinic_Management_API.Core.Entities
 {
     public class Prescription

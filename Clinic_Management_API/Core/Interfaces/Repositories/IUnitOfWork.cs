@@ -6,6 +6,7 @@
         IDoctorRepository Doctors { get; }
         IAppointmentRepository Appointments { get; }
         IMedicationRepository Medications { get; }
+        IPrescriptionRepository Prescriptions { get; }
         Task<int> CompleteAsync();
     }
 }
