@@ -46,7 +46,7 @@ namespace Clinic_Management_API.Core.Services
 
             var found = await _unitOfWork.Appointments.IsAppointmentDateAvailable( dto.AppointmentDate );
 
-            if (!found)
+            if (found)
             {
                 _logger.LogWarning("Appointment Date creation Failed");
                 throw new InvalidOperationException("Appointment Date is Already Taken");

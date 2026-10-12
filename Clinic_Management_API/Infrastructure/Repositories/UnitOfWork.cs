@@ -11,12 +11,15 @@ namespace Clinic_Management_API.Infrastructure.Repositories
 
         public IAppointmentRepository Appointments {  get; private set; }
 
+        public IMedicationRepository Medications { get; private set; }
+
         public UnitOfWork(ClinicDBContext context)
         {
             _context = context;
             Patients = new PatientRepository(_context);
             Doctors = new DoctorRepository(_context);
             Appointments = new AppointmentRepository(_context);
+            Medications = new MedicationRepository(_context);
         }
 
         public async Task<int> CompleteAsync() => await _context.SaveChangesAsync();
