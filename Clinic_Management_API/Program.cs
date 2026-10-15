@@ -1,5 +1,6 @@
 
 using Clinic_Management_API.Core.Mappings;
+using Clinic_Management_API.Errors;
 using Clinic_Management_API.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 
@@ -27,6 +28,9 @@ namespace Clinic_Management_API
 
             builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(PatientProfile).Assembly));
 
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+            builder.Services.AddProblemDetails();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -39,6 +43,7 @@ namespace Clinic_Management_API
 
             app.UseAuthorization();
 
+            app.UseExceptionHandler();
 
             app.MapControllers();
 
