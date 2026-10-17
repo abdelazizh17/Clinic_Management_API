@@ -28,7 +28,7 @@ namespace Clinic_Management_API.Core.Services
             if (appointmentEntity == null)
             {
                 _logger.LogWarning($"Appointment ID not exists for ID : {AppointmentId}");
-                throw new InvalidOperationException($"Appointment with ID :{AppointmentId} not exist ");
+                throw new KeyNotFoundException($"Appointment with ID :{AppointmentId} not exist ");
             }
 
             appointmentEntity.Status = (AppointmentStatus)Status;
@@ -49,7 +49,7 @@ namespace Clinic_Management_API.Core.Services
             if (found)
             {
                 _logger.LogWarning("Appointment Date creation Failed");
-                throw new InvalidOperationException("Appointment Date is Already Taken");
+                throw new KeyNotFoundException("Appointment Date is Already Taken");
             }
 
             var appointmentEntity = _mapper.Map<Appointment>(dto);
@@ -69,7 +69,7 @@ namespace Clinic_Management_API.Core.Services
             if (appointmetnEntity == null)
             {
                 _logger.LogWarning($"Appointment Deletion Unsuccessful, there is no Appointment with ID : {id}");
-                throw new InvalidOperationException($"Appointment with ID :{id} not exist ");
+                throw new KeyNotFoundException($"Appointment with ID :{id} not exist ");
             }
 
             _unitOfWork.Appointments.Delete(appointmetnEntity);
@@ -109,7 +109,7 @@ namespace Clinic_Management_API.Core.Services
             if (appointmentEntity == null)
             {
                 _logger.LogWarning($"Appointment not exists with ID {id}.");
-                throw new InvalidOperationException("Appointment not exists.");
+                throw new KeyNotFoundException("Appointment not exists.");
             }
 
             var appointmentDto = _mapper.Map<AppointmentResponseDto>(appointmentEntity);
@@ -128,7 +128,7 @@ namespace Clinic_Management_API.Core.Services
             if (doctorEntity == null)
             {
                 _logger.LogWarning($"Doctor Id not exists with ID {doctorId}.");
-                throw new InvalidOperationException("Doctor Id not exists.");
+                throw new KeyNotFoundException("Doctor Id not exists.");
             }
 
             var appointmentsEntity = await _unitOfWork.Appointments.GetDoctorAppointmentsAsync(doctorId, dateTime);
@@ -145,7 +145,7 @@ namespace Clinic_Management_API.Core.Services
             if (id != dto.Id)
             {
                 _logger.LogWarning($"Update failed. Route ID {id} does not match DTO ID {dto.Id}.");
-                throw new InvalidOperationException("Route ID does not match Payload ID.");
+                throw new KeyNotFoundException("Route ID does not match Payload ID.");
             }
 
             var appointmentEntity = await _unitOfWork.Appointments.GetByIdAsync(id);
@@ -153,7 +153,7 @@ namespace Clinic_Management_API.Core.Services
             if (appointmentEntity == null)
             {
                 _logger.LogWarning($"Appointment not exist with ID {id}.");
-                throw new InvalidOperationException("Appointment not exists.");
+                throw new KeyNotFoundException("Appointment not exists.");
             }
 
             _mapper.Map(dto, appointmentEntity);

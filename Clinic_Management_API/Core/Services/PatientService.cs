@@ -49,7 +49,7 @@ namespace Clinic_Management_API.Core.Services
             if (patientEntity == null)
             {
                 _logger.LogWarning($"Patient deletion failed. ID {id} not exists.");
-                throw new InvalidOperationException("Patient ID not exists.");
+                throw new KeyNotFoundException("Patient ID not exists.");
             }
 
             _unitOfWork.Patients.Delete(patientEntity);
@@ -93,7 +93,7 @@ namespace Clinic_Management_API.Core.Services
             if (patientEntity == null)
             {
                 _logger.LogWarning($"Patient not exist with ID {id}.");
-                throw new InvalidOperationException("Patient not exists.");
+                throw new KeyNotFoundException("Patient not exists.");
             }
 
             var patientDto = _mapper.Map<PatientResponseDto>(patientEntity);
@@ -119,7 +119,7 @@ namespace Clinic_Management_API.Core.Services
             if (patientEntity == null)
             {
                 _logger.LogWarning($"Patient not exist with ID {id}.");
-                throw new InvalidOperationException("Patient not exists.");
+                throw new KeyNotFoundException("Patient not exists.");
             }
 
             _mapper.Map(updatePatientDto, patientEntity);

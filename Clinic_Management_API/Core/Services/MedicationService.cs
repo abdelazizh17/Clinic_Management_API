@@ -50,7 +50,7 @@ namespace Clinic_Management_API.Core.Services
             if (medicationEntity == null)
             {
                 _logger.LogWarning($"Medication deletion failed. ID {id} not exists.");
-                throw new InvalidOperationException("Medication ID not exists.");
+                throw new KeyNotFoundException("Medication ID not exists.");
             }
 
             _unitOfWork.Medications.Delete(medicationEntity);
@@ -91,7 +91,7 @@ namespace Clinic_Management_API.Core.Services
             if (medicationEntity == null)
             {
                 _logger.LogWarning($"Medication not exist with ID {id}.");
-                throw new InvalidOperationException("Medication not exists.");
+                throw new KeyNotFoundException("Medication not exists.");
             }
 
             var medicationDto = _mapper.Map<MedicationResponseDto>(medicationEntity);
@@ -116,7 +116,7 @@ namespace Clinic_Management_API.Core.Services
             if (medicationEntity == null)
             {
                 _logger.LogWarning($"Medication not exist with ID {id}.");
-                throw new InvalidOperationException("Medication not exists.");
+                throw new KeyNotFoundException("Medication not exists.");
             }
 
             if (!string.IsNullOrEmpty(dto.Name) && !medicationEntity.Name.Equals(dto.Name,StringComparison.OrdinalIgnoreCase))

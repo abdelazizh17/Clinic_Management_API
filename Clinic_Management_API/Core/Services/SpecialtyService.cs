@@ -51,7 +51,7 @@ namespace Clinic_Management_API.Core.Services
             if (specialtyEntity == null)
             {
                 _logger.LogWarning($"Specialty deletion failed. ID {id} does not exist.");
-                throw new InvalidOperationException($"Specialty with ID {id} does not exist.");
+                throw new KeyNotFoundException($"Specialty with ID {id} does not exist.");
             }
 
             _unitOfWork.Specialties.Delete(specialtyEntity);
@@ -92,7 +92,7 @@ namespace Clinic_Management_API.Core.Services
             if (specialtyEntity == null)
             {
                 _logger.LogWarning($"Specialty does not exist with ID: {id}.");
-                throw new InvalidOperationException($"Specialty with ID {id} does not exist.");
+                throw new KeyNotFoundException($"Specialty with ID {id} does not exist.");
             }
 
             var specialtyDto = _mapper.Map<SpecialtyResponseDto>(specialtyEntity);
@@ -111,7 +111,7 @@ namespace Clinic_Management_API.Core.Services
             if (specialtyEntity == null)
             {
                 _logger.LogWarning($"Specialty does not exist with ID: {id}.");
-                throw new InvalidOperationException($"Specialty with ID {id} does not exist.");
+                throw new KeyNotFoundException($"Specialty with ID {id} does not exist.");
             }
 
             if (!string.IsNullOrEmpty(dto.Name) && !specialtyEntity.Name.Equals(dto.Name, StringComparison.OrdinalIgnoreCase))

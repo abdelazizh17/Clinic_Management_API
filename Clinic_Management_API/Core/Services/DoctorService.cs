@@ -27,7 +27,7 @@ namespace Clinic_Management_API.Core.Services
             if (phoneExists)
             {
                 _logger.LogWarning($"Doctor creation failed. Phone {dto.Phone} exists.");
-                throw new InvalidOperationException("Phone number already exists.");
+                throw new KeyNotFoundException("Phone number already exists.");
             }
 
             var doctorEntity = _mapper.Map<Doctor>(dto);
@@ -50,7 +50,7 @@ namespace Clinic_Management_API.Core.Services
             if (doctorEntity == null)
             {
                 _logger.LogWarning($"Doctor deletion failed. ID {id} not exists.");
-                throw new InvalidOperationException("Doctor ID not exists.");
+                throw new KeyNotFoundException("Doctor ID not exists.");
             }
 
             _unitOfWork.Doctors.Delete(doctorEntity);
@@ -93,7 +93,7 @@ namespace Clinic_Management_API.Core.Services
             if (doctorEntity == null)
             {
                 _logger.LogWarning($"Doctor not exist with ID {id}.");
-                throw new InvalidOperationException("Doctor not exists.");
+                throw new KeyNotFoundException("Doctor not exists.");
             }
 
             var doctorDto = _mapper.Map<DoctorResponseDto>(doctorEntity);
@@ -123,7 +123,7 @@ namespace Clinic_Management_API.Core.Services
             if (id != dto.Id)
             {
                 _logger.LogWarning($"Update failed. Route ID {id} does not match DTO ID {dto.Id}.");
-                throw new InvalidOperationException("Route ID does not match Payload ID.");
+                throw new KeyNotFoundException("Route ID does not match Payload ID.");
             }
 
             var doctorEntity = await _unitOfWork.Doctors.GetByIdAsync(id);
@@ -131,7 +131,7 @@ namespace Clinic_Management_API.Core.Services
             if (doctorEntity == null)
             {
                 _logger.LogWarning($"Doctor not exist with ID {id}.");
-                throw new InvalidOperationException("Doctor not exists.");
+                throw new KeyNotFoundException("Doctor not exists.");
             }
 
             _mapper.Map(dto, doctorEntity);

@@ -50,7 +50,7 @@ namespace Clinic_Management_API.Core.Services
             if (prescriptionEntity == null)
             {
                 _logger.LogWarning($"Prescription deletion failed. ID {id} not exists.");
-                throw new InvalidOperationException("Prescription ID not exists.");
+                throw new KeyNotFoundException("Prescription ID not exists.");
             }
 
             _unitOfWork.Prescriptions.Delete(prescriptionEntity);
@@ -89,7 +89,7 @@ namespace Clinic_Management_API.Core.Services
             if (prescriptionEntity == null)
             {
                 _logger.LogWarning($"Prescription not exist with ID {id}.");
-                throw new InvalidOperationException("Prescription not exists.");
+                throw new KeyNotFoundException("Prescription not exists.");
             }
 
             return _mapper.Map<PrescriptionResponseDto>(prescriptionEntity);
@@ -104,7 +104,7 @@ namespace Clinic_Management_API.Core.Services
             if (prescriptionEntity == null)
             {
                 _logger.LogWarning($"Prescription not exist for Appointment ID {appointmentId}.");
-                throw new InvalidOperationException("Prescription not exists for this appointment.");
+                throw new KeyNotFoundException("Prescription not exists for this appointment.");
             }
 
             return _mapper.Map<PrescriptionResponseDto>(prescriptionEntity);
@@ -125,7 +125,7 @@ namespace Clinic_Management_API.Core.Services
             if (prescriptionEntity == null)
             {
                 _logger.LogWarning($"Prescription not exist with ID {id}.");
-                throw new InvalidOperationException("Prescription not exists.");
+                throw new KeyNotFoundException("Prescription not exists.");
             }
 
             _mapper.Map(dto, prescriptionEntity);
