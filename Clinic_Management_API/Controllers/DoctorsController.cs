@@ -1,20 +1,17 @@
 ﻿using Clinic_Management_API.Core.DTOs.DoctorDTOs;
 using Clinic_Management_API.Core.DTOs.FilterDTOs;
-using Clinic_Management_API.Core.DTOs.PatientDTOs;
 using Clinic_Management_API.Core.Interfaces.Services;
-using Clinic_Management_API.Core.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic_Management_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DoctorController : ControllerBase
+    public class DoctorsController : ControllerBase
     {
         private readonly IDoctorService _doctorService;
 
-        public DoctorController(IDoctorService doctorService)
+        public DoctorsController(IDoctorService doctorService)
         {
             _doctorService = doctorService;
         }
