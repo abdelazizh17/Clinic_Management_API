@@ -7,8 +7,10 @@ using Clinic_Management_API.Errors;
 using Clinic_Management_API.Infrastructure.Data;
 using Clinic_Management_API.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Reflection;
+using System.Text;
 
 namespace Clinic_Management_API
 {
@@ -24,8 +26,13 @@ namespace Clinic_Management_API
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ClinicDBContext>();
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 6;
+            })
+                .AddEntityFrameworkStores<ClinicDBContext>()
+                .AddDefaultTokenProviders();
 
             builder.Services.AddDbContext<ClinicDBContext>(option =>
             {
@@ -39,11 +46,36 @@ namespace Clinic_Management_API
             builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
             builder.Services.AddScoped<ISpecialtyService, SpecialtyService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
 
             builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(PatientProfile).Assembly));
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddProblemDetails();
+
+
+
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                 options.TokenValidationParameters = new TokenValidationParameters
+                 {       
+                      ValidateIssuerSigningKey = true,
+                      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"])),
+                      ValidateIssuer = true,
+                      ValidIssuer = builder.Configuration["JWT:Issuer"],
+                      ValidateAudience = true,
+                      ValidAudience = builder.Configuration["JWT:Audience"],
+                      ValidateLifetime = true
+                  };
+            });
 
 
             builder.Services.AddSwaggerGen(c =>
@@ -70,6 +102,8 @@ namespace Clinic_Management_API
             }
 
             app.UseHttpsRedirection();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

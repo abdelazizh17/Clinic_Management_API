@@ -1,6 +1,5 @@
 ﻿using Clinic_Management_API.Core.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Clinic_Management_API.Infrastructure.Data
