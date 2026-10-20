@@ -23,6 +23,13 @@ namespace Clinic_Management_API.Controllers
             return Ok(patients);
         }
 
+        [HttpGet("multiple-appointments")]
+        public async Task<IActionResult> GetPatientsWithMultipleAppointments(PaginationDto filter)
+        {
+            var patients = await _patientService.GetPatientsWithMultipleAppointments(filter);
+            return Ok(patients);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {

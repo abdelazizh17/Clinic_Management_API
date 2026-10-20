@@ -103,7 +103,33 @@ namespace Clinic_Management_API.Core.Services
             return doctorDto;
         }
 
-        public async Task<IReadOnlyList<DoctorResponseDto>> GetDoctorsBySpecialtyId(int specialtyId,BaseFilterDto filter)
+        public async Task<IReadOnlyList<DoctorResponseDto>> GetDoctorsWithMostAppointments(BaseFilterDto filter,bool isAscending)
+        {
+            Expression<Func<Doctor, bool>>? searchPredicte = null;
+
+            Expression<Func<Doctor, int>> orderByDescending = d => d.Appointments.Count();
+
+            if (!string.IsNullOrEmpty(filter.SearchTerm))
+            {
+                var term = filter.SearchTerm.Trim().ToLower();
+
+                searchPredicte = d => d.FullName.ToLower().Contains(term) ||
+                                      d.Phone.Contains(term) ||
+                                      (d.Email != null && d.Email.ToLower().Contains(term));
+            }
+
+            var doctorEntity = await _unitOfWork.Doctors.GetPagedAsync(
+                searchPredicte,
+                orderByDescending,
+                isAscending,
+                filter.PageNumber,
+                filter.PageSize
+                );
+
+            return _mapper.Map<IReadOnlyList<DoctorResponseDto>>(doctorEntity);
+        }
+
+        public async Task<IReadOnlyList<DoctorResponseDto>> GetDoctorsBySpecialtyId(int specialtyId, PaginationDto filter)
         {
             Expression<Func<Doctor, bool>>? searchPredicte = d => d.SpecialtyId == specialtyId;
 

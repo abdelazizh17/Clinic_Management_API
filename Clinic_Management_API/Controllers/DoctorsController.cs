@@ -31,10 +31,17 @@ namespace Clinic_Management_API.Controllers
         }
 
         [HttpGet("specialty/{specialtyId}")]
-        public async Task<IActionResult> GetDoctorsBySpecialtyId(int specialtyId, [FromQuery] BaseFilterDto filter)
+        public async Task<IActionResult> GetDoctorsBySpecialtyId(int specialtyId, [FromQuery] PaginationDto filter)
         {
             var doctors = await _doctorService.GetDoctorsBySpecialtyId(specialtyId, filter);
 
+            return Ok(doctors);
+        }
+
+        [HttpGet("most-appointments")]
+        public async Task<IActionResult> GetDoctorsWithMostAppointments(BaseFilterDto filter, bool isAscending)
+        {
+            var doctors = await _doctorService.GetDoctorsWithMostAppointments(filter, isAscending);
             return Ok(doctors);
         }
 

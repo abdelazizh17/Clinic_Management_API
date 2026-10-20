@@ -1,7 +1,4 @@
-﻿using Clinic_Management_API.Core.Entities;
-using System.Linq.Expressions;
-
-namespace Clinic_Management_API.Core.Interfaces.Repositories
+﻿namespace Clinic_Management_API.Core.Interfaces.Repositories
 {
     public interface IGenericRepository<T> where T : class
     {
@@ -9,6 +6,13 @@ namespace Clinic_Management_API.Core.Interfaces.Repositories
         Task<IReadOnlyList<T>> GetAllAsync();
         Task<IReadOnlyList<T>> GetPagedAsync(
             Expression<Func<T, bool>>? predicate,
+            int pageNumber,
+            int pageSize);
+
+        Task<IReadOnlyList<T>> GetPagedAsync<TKey>(
+            Expression<Func<T, bool>>? predicate,
+            Expression<Func<T, TKey>>? orderByDescending,
+            bool isAscending,
             int pageNumber,
             int pageSize);
         Task AddAsync(T entity);

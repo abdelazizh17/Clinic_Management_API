@@ -7,7 +7,10 @@ namespace Clinic_Management_API.Core.Interfaces.Repositories
     {
         Task<IReadOnlyList<Appointment>> GetDoctorAppointmentsAsync(int doctorId, DateTime dateTime);
 
-        Task<bool> IsAppointmentDateAvailable(DateTime dateTime);
+        Task<bool> HasDoctorOverlapAsync(int doctorId, DateTime date, TimeOnly startTime, TimeOnly endTime);
+
+        Task<bool> HasDoctorOverlapForUpdateAsync(int appointmentId,int doctorId, DateTime date, TimeOnly startTime, TimeOnly endTime);
+
 
     }
 }

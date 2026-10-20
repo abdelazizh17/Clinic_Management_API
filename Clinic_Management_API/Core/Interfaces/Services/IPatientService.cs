@@ -9,6 +9,7 @@ namespace Clinic_Management_API.Core.Interfaces.Services
         Task<bool> UpdateAsync(int id,UpdatePatientDto updatePatientDto);
         Task<PatientResponseDto?> GetByIdAsync(int id);
         Task<bool> DeleteAsync(int id);
+        Task<IReadOnlyList<PatientResponseDto>> GetPatientsWithMultipleAppointments(PaginationDto filter);
         Task<IReadOnlyList<PatientResponseDto>> GetAllAsync(BaseFilterDto filter);
     }
 }

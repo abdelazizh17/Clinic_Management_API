@@ -28,7 +28,7 @@ namespace Clinic_Management_API.Core.Services
                 _logger.LogWarning($"Patient creation failed. Phone {createPatientDto.Phone} exists.");
                 throw new InvalidOperationException("Phone number already exists.");
             }
-
+            
             var patientEntity = _mapper.Map<Patient>(createPatientDto);
 
             await _unitOfWork.Patients.AddAsync(patientEntity);
@@ -102,6 +102,19 @@ namespace Clinic_Management_API.Core.Services
 
             return patientDto;
 
+        }
+
+        public async Task<IReadOnlyList<PatientResponseDto>> GetPatientsWithMultipleAppointments(PaginationDto filter)
+        {
+            Expression<Func<Patient, bool>>? searchPredicte = p => p.Appointments.Count() > 1;
+
+            var patientEntity = await _unitOfWork.Patients.GetPagedAsync(
+                searchPredicte,
+                filter.PageNumber,
+                filter.PageSize
+                );
+
+            return _mapper.Map<IReadOnlyList<PatientResponseDto>>(patientEntity);
         }
 
         public async Task<bool> UpdateAsync(int id, UpdatePatientDto updatePatientDto)

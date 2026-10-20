@@ -6,6 +6,5 @@ namespace Clinic_Management_API.Core.Interfaces.Repositories
     {
         Task<bool> IsPhoneNumberExistsAsync(string phoneNumber);
 
-
     }
 }

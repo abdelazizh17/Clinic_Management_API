@@ -10,6 +10,7 @@ namespace Clinic_Management_API.Core.Interfaces.Services
         Task<bool> DeleteAsync(int id);
         Task<DoctorResponseDto?> GetByIdAsync(int id);
         Task<IReadOnlyList<DoctorResponseDto>> GetAllAsync(BaseFilterDto filter);
-        Task<IReadOnlyList<DoctorResponseDto>> GetDoctorsBySpecialtyId(int  specialtyId, BaseFilterDto filter);
+        Task<IReadOnlyList<DoctorResponseDto>> GetDoctorsWithMostAppointments(BaseFilterDto filter, bool isAscending);
+        Task<IReadOnlyList<DoctorResponseDto>> GetDoctorsBySpecialtyId(int  specialtyId, PaginationDto filter);
     }
 }

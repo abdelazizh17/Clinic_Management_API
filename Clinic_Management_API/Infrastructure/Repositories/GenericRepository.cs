@@ -26,8 +26,33 @@ namespace Clinic_Management_API.Infrastructure.Repositories
 
             return await query.
                 Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize).ToListAsync();
+                .Take(pageSize)
+                .ToListAsync();
         }
+
+        public async Task<IReadOnlyList<T>> GetPagedAsync<TKey>(Expression<Func<T, bool>>? predicate, Expression<Func<T, TKey>>? orderByDescending, bool isAscending, int pageNumber, int pageSize)
+        {
+            IQueryable<T> query = _context.Set<T>().AsNoTracking();
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            if (orderByDescending != null)
+            {
+                if (isAscending)
+                    query = query.OrderBy(orderByDescending);
+                else
+                    query = query.OrderByDescending(orderByDescending);
+            }
+
+            return await query.
+                Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
 
         public void Update(T entity) => _context.Set<T>().Update(entity);
        

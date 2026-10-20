@@ -10,6 +10,11 @@ namespace Clinic_Management_API.Infrastructure.Repositories
         {
         }
 
+        public async Task<IReadOnlyList<Medication>> GetByIdsAsync(List<int> ids)
+        {
+            return await _context.Medications.Select(m => m).ToListAsync();
+        }
+
         public async Task<bool> IsMedicationNameExistAsync(string name)
         {
             return await _context.Medications.AnyAsync(m => m.Name == name);

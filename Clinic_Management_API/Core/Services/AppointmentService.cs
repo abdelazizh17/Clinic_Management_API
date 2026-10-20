@@ -44,12 +44,26 @@ namespace Clinic_Management_API.Core.Services
         {
             _logger.LogInformation($"Starting Create Appointment with Appointment Date : {dto.AppointmentDate}");
 
-            var found = await _unitOfWork.Appointments.IsAppointmentDateAvailable( dto.AppointmentDate );
+            var doctor = await _unitOfWork.Doctors.GetByIdAsync(dto.DoctorId);
 
-            if (found)
+            if (doctor == null)
             {
-                _logger.LogWarning("Appointment Date creation Failed");
-                throw new KeyNotFoundException("Appointment Date is Already Taken");
+                _logger.LogWarning($"Non-existent Doctor ID: {dto.DoctorId}");
+                throw new KeyNotFoundException("Doctor does not exist.");
+            }
+
+            if (!doctor.IsActive)
+            {
+                _logger.LogWarning($"Attempt to book an appointment with inactive");
+                throw new InvalidOperationException("Doctor is not active");
+            }
+
+            bool hasOverlap = await _unitOfWork.Appointments.HasDoctorOverlapAsync(dto.DoctorId, dto.AppointmentDate, dto.StartTime, dto.EndTime);
+
+            if (hasOverlap)
+            {
+                _logger.LogWarning("Appointment creation failed due to time overlap.");
+                throw new InvalidOperationException("Doctor already has an overlapping appointment at this time.");
             }
 
             var appointmentEntity = _mapper.Map<Appointment>(dto);
@@ -154,6 +168,27 @@ namespace Clinic_Management_API.Core.Services
             {
                 _logger.LogWarning($"Appointment not exist with ID {id}.");
                 throw new KeyNotFoundException("Appointment not exists.");
+            }
+
+            var doctor = await _unitOfWork.Doctors.GetByIdAsync(dto.DoctorId ?? appointmentEntity.DoctorId);
+            if (doctor == null || !doctor.IsActive)
+            {
+                _logger.LogWarning($"Attempt to update appointment with inactive or non-existent Doctor ID.");
+                throw new InvalidOperationException("Doctor is not active or does not exist.");
+            }
+
+
+            bool hasOverlap = await _unitOfWork.Appointments.HasDoctorOverlapForUpdateAsync(
+                id,
+                dto.DoctorId ?? appointmentEntity.DoctorId,
+                dto.AppointmentDate ?? appointmentEntity.AppointmentDate,
+                dto.StartTime ?? appointmentEntity.StartTime,
+                dto.EndTime ?? appointmentEntity.EndTime);
+
+            if (hasOverlap)
+            {
+                _logger.LogWarning("Appointment update failed due to time overlap.");
+                throw new InvalidOperationException("Doctor already has an overlapping appointment at this time.");
             }
 
             _mapper.Map(dto, appointmentEntity);

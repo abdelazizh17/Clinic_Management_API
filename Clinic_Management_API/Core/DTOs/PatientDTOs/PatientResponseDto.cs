@@ -17,5 +17,19 @@ namespace Clinic_Management_API.Core.DTOs.PatientDTOs
         public DateTime RegistrationDate { get; set; }
         public List<PrescriptionSummaryDto> Prescriptions { get; set; } = new();
         public List<AppointmentSummaryDto> Appointments { get; set; } = new();
+
+        public int Age 
+        {
+            get
+            {
+                var today = DateTime.Today; 
+
+                var age = today.Year - DateOfBirth.Year; 
+
+                if (DateOfBirth.Date < today.AddYears(-age)) --age;
+
+                return age;
+            }
+        }
     }
 }

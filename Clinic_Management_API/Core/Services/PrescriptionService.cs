@@ -1,6 +1,7 @@
 ﻿using Clinic_Management_API.Core.DTOs.FilterDTOs;
 using Clinic_Management_API.Core.DTOs.PrescriptionDTOs;
 using Clinic_Management_API.Core.Entities;
+using Clinic_Management_API.Core.Enums;
 using Clinic_Management_API.Core.Interfaces.Repositories;
 using Clinic_Management_API.Core.Interfaces.Services;
 
@@ -24,11 +25,48 @@ namespace Clinic_Management_API.Core.Services
         {
             _logger.LogInformation($"Starting create Prescription for Patient ID : {dto.PatientId} and Doctor ID : {dto.DoctorId}");
 
+            var appointment = await _unitOfWork.Appointments.GetByIdAsync(dto.AppointmentId);
+            if (appointment == null)
+            {
+                throw new KeyNotFoundException("Appointment not found.");
+            }
+
+            if (appointment.Status != AppointmentStatus.Completed)
+            {
+                throw new InvalidOperationException("Cannot create a prescription for a non-completed appointment.");
+            }
+
             var existingPrescription = await _unitOfWork.Prescriptions.GetByAppointmentIdAsync(dto.AppointmentId);
             if (existingPrescription != null)
             {
                 _logger.LogWarning($"Prescription creation failed. Appointment ID {dto.AppointmentId} already has a prescription.");
                 throw new InvalidOperationException("A prescription already exists for this appointment.");
+            }
+
+            var medicationIds = dto.PrescriptionItems.Select(p => p.MedicationId).ToList();
+            
+            var medication = await _unitOfWork.Medications.GetByIdsAsync(medicationIds);
+
+            if (medication.Count() != medicationIds.Distinct().Count())
+            {
+                throw new KeyNotFoundException("One or more medications were not found.");
+            }
+
+            var inactiveMedication = medication.FirstOrDefault(m => !m.IsActive);
+            if (inactiveMedication != null)
+            {
+                throw new InvalidOperationException($"Medication '{inactiveMedication.Name}' is inactive and cannot be prescribed.");
+            }
+
+            foreach (var item in medication)
+            {
+                if (item.StockQuantity <= 0)
+                {
+                    throw new InvalidOperationException($"{item.Name} sold out");
+                }
+
+                item.StockQuantity -= 1;
+
             }
 
             var prescriptionEntity = _mapper.Map<Prescription>(dto);
