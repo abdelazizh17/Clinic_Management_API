@@ -1,6 +1,5 @@
 ﻿using Clinic_Management_API.Core.DTOs.AuthDTOs;
 using Clinic_Management_API.Core.Interfaces.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic_Management_API.Controllers

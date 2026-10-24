@@ -1,12 +1,14 @@
 ﻿using Clinic_Management_API.Core.DTOs.FilterDTOs;
 using Clinic_Management_API.Core.DTOs.PrescriptionDTOs;
 using Clinic_Management_API.Core.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic_Management_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Doctor")]
     public class PrescriptionsController : ControllerBase
     {
         private readonly IPrescriptionService _prescriptionService;

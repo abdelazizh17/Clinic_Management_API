@@ -1,12 +1,14 @@
 ﻿using Clinic_Management_API.Core.DTOs.AppointmentDTOs;
 using Clinic_Management_API.Core.DTOs.FilterDTOs;
 using Clinic_Management_API.Core.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic_Management_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,Receptionist")]
     public class AppointmentsController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;

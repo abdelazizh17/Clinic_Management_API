@@ -1,4 +1,5 @@
 
+using Clinic_Management_API.Core.Entities;
 using Clinic_Management_API.Core.Interfaces.Repositories;
 using Clinic_Management_API.Core.Interfaces.Services;
 using Clinic_Management_API.Core.Mappings;
@@ -16,7 +17,7 @@ namespace Clinic_Management_API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -92,7 +93,71 @@ namespace Clinic_Management_API
                 c.IncludeXmlComments(xmlPath);
             });
 
+
+
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<ClinicDBContext>();
+                    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+                    string[] roleNames = { "Admin", "Doctor", "Receptionist" };
+                    foreach (var roleName in roleNames)
+                    {
+                        if (!await roleManager.RoleExistsAsync(roleName))
+                        {
+                            await roleManager.CreateAsync(new IdentityRole(roleName));
+                        }
+                    }
+
+                    if (!context.Specialties.Any())
+                    {
+                        var specialties = new List<Specialty>
+                        {
+                            new Specialty { Name = "Cardiology", Description = "Heart and cardiovascular system care" },
+                            new Specialty { Name = "Dermatology", Description = "Skin, hair, and nail treatments" },
+                            new Specialty { Name = "Pediatrics", Description = "Medical care for infants, children, and adolescents" },
+                            new Specialty { Name = "Neurology", Description = "Brain and nervous system disorders" },
+                            new Specialty { Name = "Orthopedics", Description = "Bones, joints, and musculoskeletal system care" }
+                        };
+
+                        await context.Specialties.AddRangeAsync(specialties);
+                        await context.SaveChangesAsync();
+                    }
+
+                    string adminEmail = "admin@clinic.com";
+                    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+                    if (adminUser == null)
+                    {
+                        var newAdmin = new ApplicationUser
+                        {
+                            UserName = "AdminMaster",
+                            Email = adminEmail,
+                            EmailConfirmed = true 
+                        };
+
+                        var createAdminResult = await userManager.CreateAsync(newAdmin, "Admin@123");
+
+                        if (createAdminResult.Succeeded)
+                        {
+                            await userManager.AddToRoleAsync(newAdmin, "Admin");
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred while seeding the database.");
+                }
+            }
+
+            app.UseExceptionHandler();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -106,8 +171,6 @@ namespace Clinic_Management_API
             app.UseAuthentication();
 
             app.UseAuthorization();
-
-            app.UseExceptionHandler();
 
             app.MapControllers();
 
