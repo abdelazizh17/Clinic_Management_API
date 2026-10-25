@@ -17,23 +17,22 @@ namespace Clinic_Management_API.Infrastructure.Repositories
 
         public async Task<IReadOnlyList<T>> GetPagedAsync(Expression<Func<T, bool>>? predicate, int pageNumber, int pageSize)
         {
-            IQueryable<T> query = _context.Set<T>().AsNoTracking();
-
-            if (predicate != null)
-            {
-                query = query.Where(predicate);
-            }
-
-            return await query.
-                Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+            return await ApplyPaginationAsync(_context.Set<T>(), predicate, (Expression<Func<T, int>>?)null, true, pageNumber, pageSize);
         }
 
         public async Task<IReadOnlyList<T>> GetPagedAsync<TKey>(Expression<Func<T, bool>>? predicate, Expression<Func<T, TKey>>? orderByDescending, bool isAscending, int pageNumber, int pageSize)
         {
-            IQueryable<T> query = _context.Set<T>().AsNoTracking();
+            return await ApplyPaginationAsync(_context.Set<T>(), predicate, orderByDescending, isAscending, pageNumber, pageSize);
+        }
 
+        protected async Task<IReadOnlyList<T>> ApplyPaginationAsync<TKey>
+            (IQueryable<T> query,
+            Expression<Func<T, bool>>? predicate,
+            Expression<Func<T, TKey>>? orderByDescending,
+            bool isAscending,
+            int pageNumber,
+            int pageSize)
+        {
             if (predicate != null)
             {
                 query = query.Where(predicate);
@@ -42,17 +41,21 @@ namespace Clinic_Management_API.Infrastructure.Repositories
             if (orderByDescending != null)
             {
                 if (isAscending)
+                {
                     query = query.OrderBy(orderByDescending);
+                }
                 else
+                {
                     query = query.OrderByDescending(orderByDescending);
+                }
             }
 
-            return await query.
-                Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+            return await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync();
         }
-
 
         public void Update(T entity) => _context.Set<T>().Update(entity);
        

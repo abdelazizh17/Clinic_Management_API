@@ -75,7 +75,7 @@ namespace Clinic_Management_API.Core.Services
                                       (d.Email != null && d.Email.ToLower().Contains(term));
             }
 
-            var doctorEntity = await _unitOfWork.Doctors.GetPagedAsync(
+            var doctorEntity = await _unitOfWork.Doctors.GetPagedWithSpecAsync(
                 searchPredicte,
                 filter.PageNumber,
                 filter.PageSize
@@ -88,7 +88,7 @@ namespace Clinic_Management_API.Core.Services
         {
             _logger.LogInformation($"Starting Get Doctor for ID : {id}");
 
-            var doctorEntity = await _unitOfWork.Doctors.GetByIdAsync(id);
+            var doctorEntity = await _unitOfWork.Doctors.GetByIdWithSpecAsync(id);
 
             if (doctorEntity == null)
             {
@@ -118,7 +118,7 @@ namespace Clinic_Management_API.Core.Services
                                       (d.Email != null && d.Email.ToLower().Contains(term));
             }
 
-            var doctorEntity = await _unitOfWork.Doctors.GetPagedAsync(
+            var doctorEntity = await _unitOfWork.Doctors.GetPagedWithSpecAsync(
                 searchPredicte,
                 orderByDescending,
                 isAscending,
@@ -133,7 +133,7 @@ namespace Clinic_Management_API.Core.Services
         {
             Expression<Func<Doctor, bool>>? searchPredicte = d => d.SpecialtyId == specialtyId;
 
-            var doctorEntity = await _unitOfWork.Doctors.GetPagedAsync(
+            var doctorEntity = await _unitOfWork.Doctors.GetPagedWithSpecAsync(
                 searchPredicte,
                 filter.PageNumber,
                 filter.PageSize
@@ -152,7 +152,7 @@ namespace Clinic_Management_API.Core.Services
                 throw new KeyNotFoundException("Route ID does not match Payload ID.");
             }
 
-            var doctorEntity = await _unitOfWork.Doctors.GetByIdAsync(id);
+            var doctorEntity = await _unitOfWork.Doctors.GetByIdWithSpecAsync(id);
 
             if (doctorEntity == null)
             {

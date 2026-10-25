@@ -1,6 +1,4 @@
-﻿using Clinic_Management_API.Core.Entities;
-
-namespace Clinic_Management_API.Core.DTOs.DoctorDTOs
+﻿namespace Clinic_Management_API.Core.DTOs.DoctorDTOs
 {
     public class DoctorResponseDto
     {

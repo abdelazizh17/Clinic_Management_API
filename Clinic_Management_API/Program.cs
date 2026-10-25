@@ -116,21 +116,6 @@ namespace Clinic_Management_API
                         }
                     }
 
-                    if (!context.Specialties.Any())
-                    {
-                        var specialties = new List<Specialty>
-                        {
-                            new Specialty { Name = "Cardiology", Description = "Heart and cardiovascular system care" },
-                            new Specialty { Name = "Dermatology", Description = "Skin, hair, and nail treatments" },
-                            new Specialty { Name = "Pediatrics", Description = "Medical care for infants, children, and adolescents" },
-                            new Specialty { Name = "Neurology", Description = "Brain and nervous system disorders" },
-                            new Specialty { Name = "Orthopedics", Description = "Bones, joints, and musculoskeletal system care" }
-                        };
-
-                        await context.Specialties.AddRangeAsync(specialties);
-                        await context.SaveChangesAsync();
-                    }
-
                     string adminEmail = "admin@clinic.com";
                     var adminUser = await userManager.FindByEmailAsync(adminEmail);
 

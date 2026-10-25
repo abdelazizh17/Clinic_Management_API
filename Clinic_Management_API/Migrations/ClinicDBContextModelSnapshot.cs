@@ -333,6 +333,38 @@ namespace Clinic_Management_API.Migrations
                         .IsUnique();
 
                     b.ToTable("Specialties");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Heart and cardiovascular system care",
+                            Name = "Cardiology"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Skin, hair, and nail treatments",
+                            Name = "Dermatology"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Medical care for infants, children, and adolescents",
+                            Name = "Pediatrics"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Brain and nervous system disorders",
+                            Name = "Neurology"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "Bones, joints, and musculoskeletal system care",
+                            Name = "Orthopedics"
+                        });
                 });
 
             modelBuilder.Entity("Clinic_Management_API.Infrastructure.Data.ApplicationUser", b =>

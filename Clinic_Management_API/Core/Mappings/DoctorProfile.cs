@@ -14,7 +14,10 @@ namespace Clinic_Management_API.Core.Mappings
                 .ReverseMap()
                 .ForAllMembers(opts => opts.Condition((src,dest,srcMember) => srcMember != null));
 
-            CreateMap<DoctorResponseDto, Doctor>().ReverseMap();
+            CreateMap<DoctorResponseDto, Doctor>()
+                .ReverseMap()
+                .ForMember(dest => dest.Specialty,
+                           opt => opt.MapFrom(src => src.Specialty != null ? src.Specialty.Name : string.Empty));
         }
     }
 }
