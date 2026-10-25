@@ -1,7 +1,5 @@
 ﻿using Clinic_Management_API.Core.DTOs.AppointmentDTOs;
 using Clinic_Management_API.Core.DTOs.PrescriptionDTOs;
-using Clinic_Management_API.Core.Entities;
-using Clinic_Management_API.Core.Enums;
 
 namespace Clinic_Management_API.Core.DTOs.PatientDTOs
 {
@@ -9,7 +7,7 @@ namespace Clinic_Management_API.Core.DTOs.PatientDTOs
     {
         public int Id { get; set; }
         public string FullName { get; set; } = null!;
-        public DateTime DateOfBirth { get; set; }
+        public DateOnly DateOfBirth { get; set; }
         public string Gender { get; set; } = null!;
         public string Phone { get; set; } = null!;
         public string? Email { get; set; }
@@ -22,11 +20,11 @@ namespace Clinic_Management_API.Core.DTOs.PatientDTOs
         {
             get
             {
-                var today = DateTime.Today; 
+                var today = DateOnly.FromDateTime(DateTime.Today);
 
                 var age = today.Year - DateOfBirth.Year; 
 
-                if (DateOfBirth.Date < today.AddYears(-age)) --age;
+                if (DateOfBirth > today.AddYears(-age)) --age; 
 
                 return age;
             }

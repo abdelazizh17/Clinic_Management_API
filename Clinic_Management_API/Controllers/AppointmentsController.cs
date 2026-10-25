@@ -34,7 +34,7 @@ namespace Clinic_Management_API.Controllers
         }
 
         [HttpGet("doctor/{doctorId}")]
-        public async Task<IActionResult> GetDoctorAppointments(int doctorId,[FromQuery] DateTime dateTime)
+        public async Task<IActionResult> GetDoctorAppointments(int doctorId,[FromQuery] DateOnly dateTime)
         {
            var appointments =  await _appointmentService.GetDoctorAppointmentsAsync(doctorId, dateTime);
            return Ok(appointments);

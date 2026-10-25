@@ -10,12 +10,12 @@ namespace Clinic_Management_API.Infrastructure.Repositories
         {
         }
 
-        public async Task<IReadOnlyList<Appointment>> GetDoctorAppointmentsAsync(int doctorId, DateTime dateTime)
+        public async Task<IReadOnlyList<Appointment>> GetDoctorAppointmentsAsync(int doctorId, DateOnly dateTime)
         {
-            return await _context.Appointments.Where(a => a.DoctorId == doctorId && a.AppointmentDate.Date == dateTime).AsNoTracking().ToListAsync();
+            return await _context.Appointments.Where(a => a.DoctorId == doctorId && a.AppointmentDate == dateTime).AsNoTracking().ToListAsync();
         }
 
-        public async Task<bool> HasDoctorOverlapAsync(int doctorId, DateTime date, TimeOnly startTime, TimeOnly endTime)
+        public async Task<bool> HasDoctorOverlapAsync(int doctorId, DateOnly date, TimeOnly startTime, TimeOnly endTime)
         {
             return await _context.Appointments.AnyAsync(a => a.DoctorId == doctorId &&
             a.AppointmentDate == date &&
@@ -24,7 +24,7 @@ namespace Clinic_Management_API.Infrastructure.Repositories
             endTime > a.StartTime);
         }
 
-        public async Task<bool> HasDoctorOverlapForUpdateAsync(int appointmentId, int doctorId, DateTime date, TimeOnly startTime, TimeOnly endTime)
+        public async Task<bool> HasDoctorOverlapForUpdateAsync(int appointmentId, int doctorId, DateOnly date, TimeOnly startTime, TimeOnly endTime)
         {
             return await _context.Appointments.AnyAsync(a =>
             a.Id != appointmentId &&

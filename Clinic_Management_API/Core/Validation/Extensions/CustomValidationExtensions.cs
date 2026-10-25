@@ -26,11 +26,11 @@ namespace Clinic_Management_API.Core.Validation.Extensions
         }
 
 
-        public static IRuleBuilderOptions<T, DateTime> MustBeValidBirthDate<T>(this IRuleBuilder<T, DateTime> ruleBuilder)
+        public static IRuleBuilderOptions<T, DateOnly> MustBeValidBirthDate<T>(this IRuleBuilder<T, DateOnly> ruleBuilder)
         {
             return ruleBuilder
-                .LessThan(DateTime.UtcNow).WithMessage("Date of birth must be in the past.")
-                .GreaterThan(DateTime.UtcNow.AddYears(-120)).WithMessage("Invalid date of birth.");
+                .LessThan(DateOnly.FromDateTime(DateTime.Today)).WithMessage("Date of birth must be in the past.")
+                .GreaterThan(DateOnly.FromDateTime(DateTime.Today).AddYears(-120)).WithMessage("Invalid date of birth.");
         }
     }
 }

@@ -31,13 +31,15 @@ namespace Clinic_Management_API.Core.Services
             }
 
             var token = await _tokenService.CreateTokenAsync(user, _userManager);
+            var roles = await _userManager.GetRolesAsync(user);
 
             return new AuthResponseDto
             {
                 IsAuthenticated = true,
                 Message = "Logged in successfully",
                 Token = token,
-                ExpiresOn = DateTime.UtcNow.AddDays(7)
+                ExpiresOn = DateTime.UtcNow.AddDays(7).ToString("yyyy-MM-dd HH:mm:ss"),
+                Roles = roles.ToList()
             };
         }
 
@@ -71,7 +73,7 @@ namespace Clinic_Management_API.Core.Services
                 IsAuthenticated = true,
                 Message = "User registered successfully",
                 Token = token,
-                ExpiresOn = DateTime.UtcNow.AddDays(7)
+                ExpiresOn = DateTime.UtcNow.AddDays(7).ToString("yyyy-MM-dd HH:mm:ss"),
             };
 
             

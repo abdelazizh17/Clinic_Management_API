@@ -1,5 +1,4 @@
 ﻿using Clinic_Management_API.Core.Enums;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Clinic_Management_API.Core.Entities
 {
@@ -7,7 +6,7 @@ namespace Clinic_Management_API.Core.Entities
     {
         public int Id { get; set; }
         public string FullName { get; set; } = null!;
-        public DateTime DateOfBirth { get; set; }
+        public DateOnly DateOfBirth { get; set; }
         public Gender Gender { get; set; }
         public string Phone { get; set; } = null!;
         public string? Email { get; set; }

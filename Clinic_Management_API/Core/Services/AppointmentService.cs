@@ -133,7 +133,7 @@ namespace Clinic_Management_API.Core.Services
             return appointmentDto;
         }
 
-        public async Task<IReadOnlyList<AppointmentResponseDto>> GetDoctorAppointmentsAsync(int doctorId, DateTime dateTime)
+        public async Task<IReadOnlyList<AppointmentResponseDto>> GetDoctorAppointmentsAsync(int doctorId, DateOnly dateTime)
         {
             _logger.LogInformation($"Starting Get Appointments for Doctor ID : {doctorId}");
 

@@ -23,7 +23,7 @@ namespace Clinic_Management_API.Core.Validation.Appointment
 
             RuleFor(a => a.AppointmentDate)
                 .NotEmpty().WithMessage("Appointment Date is required")
-                .GreaterThan(DateTime.UtcNow).WithMessage("This Date is Expired");
+                .GreaterThan(DateOnly.FromDateTime(DateTime.Today)).WithMessage("This Date is Expired");
         }
     }
 }

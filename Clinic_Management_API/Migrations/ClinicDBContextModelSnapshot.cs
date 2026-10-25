@@ -30,7 +30,7 @@ namespace Clinic_Management_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("AppointmentDate")
+                    b.Property<DateOnly>("AppointmentDate")
                         .HasColumnType("date");
 
                     b.Property<int>("DoctorId")
@@ -164,7 +164,7 @@ namespace Clinic_Management_API.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime>("DateOfBirth")
+                    b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("date");
 
                     b.Property<string>("Email")

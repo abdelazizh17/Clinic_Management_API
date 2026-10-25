@@ -6,7 +6,7 @@ namespace Clinic_Management_API.Core.DTOs.AppointmentDTOs
     public class AppointmentResponseDto
     {
         public int Id { get; set; }
-        public DateTime AppointmentDate { get; set; }
+        public DateOnly AppointmentDate { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
         public string Status { get; set; } = null!;

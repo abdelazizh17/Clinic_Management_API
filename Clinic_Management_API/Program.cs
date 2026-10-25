@@ -49,6 +49,7 @@ namespace Clinic_Management_API
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
 
             builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(PatientProfile).Assembly));
@@ -165,6 +166,8 @@ namespace Clinic_Management_API
                 app.UseSwagger();
                 app.UseSwaggerUI(); 
             }
+
+            app.UseCustomStatusCodePages();
 
             app.UseHttpsRedirection();
 

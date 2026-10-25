@@ -10,7 +10,7 @@ namespace Clinic_Management_API.Core.Interfaces.Services
         Task<bool> DeleteAsync(int id);
         Task<AppointmentResponseDto?> GetByIdAsync(int id);
         Task<IReadOnlyList<AppointmentResponseDto>> GetAllAsync(AppointmentFilterDto filter);
-        Task<IReadOnlyList<AppointmentResponseDto>> GetDoctorAppointmentsAsync(int doctorId, DateTime dateTime);
+        Task<IReadOnlyList<AppointmentResponseDto>> GetDoctorAppointmentsAsync(int doctorId, DateOnly dateTime);
         Task<bool> ChangeStatusAsync(int AppointmentId,int Status);
     }
 }

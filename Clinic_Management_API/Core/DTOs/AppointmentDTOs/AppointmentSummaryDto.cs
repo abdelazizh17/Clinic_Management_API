@@ -3,7 +3,7 @@
     public class AppointmentSummaryDto
     {
         public int Id { get; set; }
-        public DateTime AppointmentDate { get; set; }
+        public DateOnly AppointmentDate { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
         public string DoctorName { get; set; } = null!;

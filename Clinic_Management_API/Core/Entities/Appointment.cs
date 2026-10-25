@@ -6,7 +6,7 @@ namespace Clinic_Management_API.Core.Entities
     public class Appointment
     {
         public int Id { get; set; }
-        public DateTime AppointmentDate { get; set; }
+        public DateOnly AppointmentDate { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
         public AppointmentStatus Status { get; set; }
