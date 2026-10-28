@@ -1,6 +1,4 @@
-﻿using Clinic_Management_API.Core.Entities;
-using Clinic_Management_API.Core.Enums;
-
+﻿
 namespace Clinic_Management_API.Core.DTOs.AppointmentDTOs
 {
     public class AppointmentResponseDto
@@ -11,7 +9,7 @@ namespace Clinic_Management_API.Core.DTOs.AppointmentDTOs
         public TimeOnly EndTime { get; set; }
         public string Status { get; set; } = null!;
         public string? Notes { get; set; }
-        public string Patient { get; set; } = null!;
-        public string Doctor { get; set; } = null!;
+        public PatientSummaryDto Patient { get; set; } = null!;
+        public DoctorSummaryDto Doctor { get; set; } = null!;
     }
 }

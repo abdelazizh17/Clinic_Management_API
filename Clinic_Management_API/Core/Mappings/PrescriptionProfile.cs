@@ -1,4 +1,6 @@
-﻿using Clinic_Management_API.Core.DTOs.PrescriptionDTOs;
+﻿using AutoMapper;
+using Clinic_Management_API.Core.DTOs.AppointmentDTOs;
+using Clinic_Management_API.Core.DTOs.PrescriptionDTOs;
 using Clinic_Management_API.Core.DTOs.PrescriptionItemDTOs;
 using Clinic_Management_API.Core.Entities;
 
@@ -8,21 +10,26 @@ namespace Clinic_Management_API.Core.Mappings
     {
         public PrescriptionProfile()
         {
-            CreateMap<CreatePrescriptionDto, Prescription>().ReverseMap();
+            CreateMap<CreatePrescriptionDto, Prescription>();
 
             CreateMap<UpdatePrescriptionDto, Prescription>()
-                .ReverseMap()
-                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+                .ForMember(dest => dest.Id,
+                    opt => opt.Ignore())
 
-            CreateMap<Prescription, PrescriptionResponseDto>().ReverseMap();
+                .ForMember(dest => dest.Notes,
+                    opt => opt.PreCondition(src => src.Notes != null))
 
-            CreateMap<CreatePrescriptionItemDto, PrescriptionItem>().ReverseMap();
+                .ForMember(dest => dest.PrescriptionItems,
+                    opt => opt.PreCondition(
+                        src => src.PrescriptionItems != null));
 
-            CreateMap<UpdatePrescriptionItemDto, PrescriptionItem>()
-                .ReverseMap()
-                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<Prescription, PrescriptionResponseDto>();
 
-            CreateMap<PrescriptionItem, PrescriptionItemResponseDto>().ReverseMap();
+            CreateMap<CreatePrescriptionItemDto, PrescriptionItem>();
+
+            CreateMap<UpdatePrescriptionItemDto, PrescriptionItem>();
+
+            CreateMap<PrescriptionItem, PrescriptionItemResponseDto>();
         }
     }
 }

@@ -36,9 +36,11 @@ namespace Clinic_Management_API.Core.Services
 
             await _unitOfWork.CompleteAsync();
 
+            var doctorWithSpec = await _unitOfWork.Doctors.GetByIdWithSpecAsync(doctorEntity.Id);
+
             _logger.LogInformation($"Doctor created successfully with ID {doctorEntity.Id}");
 
-            return _mapper.Map<DoctorResponseDto>(doctorEntity);
+            return _mapper.Map<DoctorResponseDto>(doctorWithSpec);
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -146,12 +148,6 @@ namespace Clinic_Management_API.Core.Services
         {
             _logger.LogInformation($"Starting Update Doctor for ID : {id}");
 
-            if (id != dto.Id)
-            {
-                _logger.LogWarning($"Update failed. Route ID {id} does not match DTO ID {dto.Id}.");
-                throw new KeyNotFoundException("Route ID does not match Payload ID.");
-            }
-
             var doctorEntity = await _unitOfWork.Doctors.GetByIdWithSpecAsync(id);
 
             if (doctorEntity == null)
@@ -161,8 +157,6 @@ namespace Clinic_Management_API.Core.Services
             }
 
             _mapper.Map(dto, doctorEntity);
-
-            _unitOfWork.Doctors.Update(doctorEntity);
 
             await _unitOfWork.CompleteAsync();
 

@@ -1,11 +1,9 @@
-﻿using Clinic_Management_API.Core.Entities;
-using Clinic_Management_API.Core.Enums;
+﻿using Clinic_Management_API.Core.Enums;
 
 namespace Clinic_Management_API.Core.DTOs.AppointmentDTOs
 {
     public class UpdateAppointmentDto
     {
-        public int Id { get; set; }
         public DateOnly? AppointmentDate { get; set; }
         public TimeOnly? StartTime { get; set; }
         public TimeOnly? EndTime { get; set; }

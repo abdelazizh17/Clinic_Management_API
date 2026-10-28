@@ -1,4 +1,5 @@
-﻿using Clinic_Management_API.Core.DTOs.SpecialtyDTOs;
+﻿using AutoMapper;
+using Clinic_Management_API.Core.DTOs.SpecialtyDTOs;
 using Clinic_Management_API.Core.Entities;
 
 namespace Clinic_Management_API.Core.Mappings
@@ -10,9 +11,13 @@ namespace Clinic_Management_API.Core.Mappings
             CreateMap<CreateSpecialtyDto, Specialty>();
 
             CreateMap<UpdateSpecialtyDto, Specialty>()
-                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+                .ForMember(dest => dest.Name,
+                    opt => opt.PreCondition(src => src.Name != null))
 
-            CreateMap<Specialty, SpecialtyResponseDto>().ReverseMap();
+                .ForMember(dest => dest.Description,
+                    opt => opt.PreCondition(src => src.Description != null));
+
+            CreateMap<Specialty, SpecialtyResponseDto>();
         }
     }
 }

@@ -76,7 +76,15 @@ namespace Clinic_Management_API.Core.Services
 
             _logger.LogInformation($"Prescription created successfully with ID {prescriptionEntity.Id}");
 
-            return _mapper.Map<PrescriptionResponseDto>(prescriptionEntity);
+            var createdPrescription = await _unitOfWork.Prescriptions.GetByIdWithDetailsAsync(prescriptionEntity.Id);
+
+            if (createdPrescription == null)
+            {
+                throw new InvalidOperationException(
+                    "Prescription was created but could not be retrieved.");
+            }
+
+            return _mapper.Map<PrescriptionResponseDto>(createdPrescription);
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -109,7 +117,7 @@ namespace Clinic_Management_API.Core.Services
                 searchPredicate = p => p.Notes != null && p.Notes.ToLower().Contains(term);
             }
 
-            var prescriptions = await _unitOfWork.Prescriptions.GetPagedAsync(
+            var prescriptions = await _unitOfWork.Prescriptions.GetPagedWithSpecAsync(
                 searchPredicate,
                 filter.PageNumber,
                 filter.PageSize
@@ -122,7 +130,7 @@ namespace Clinic_Management_API.Core.Services
         {
             _logger.LogInformation($"Starting Get Prescription for ID : {id}");
 
-            var prescriptionEntity = await _unitOfWork.Prescriptions.GetByIdAsync(id);
+            var prescriptionEntity = await _unitOfWork.Prescriptions.GetByIdWithDetailsAsync(id);
 
             if (prescriptionEntity == null)
             {
@@ -152,13 +160,7 @@ namespace Clinic_Management_API.Core.Services
         {
             _logger.LogInformation($"Starting Update Prescription for ID : {id}");
 
-            if (id != dto.Id)
-            {
-                _logger.LogWarning($"Update failed. Route ID {id} does not match DTO ID {dto.Id}.");
-                throw new InvalidOperationException("Route ID does not match Payload ID.");
-            }
-
-            var prescriptionEntity = await _unitOfWork.Prescriptions.GetByIdAsync(id);
+            var prescriptionEntity = await _unitOfWork.Prescriptions.GetByIdWithDetailsAsync(id);
 
             if (prescriptionEntity == null)
             {
@@ -169,6 +171,7 @@ namespace Clinic_Management_API.Core.Services
             _mapper.Map(dto, prescriptionEntity);
 
             _unitOfWork.Prescriptions.Update(prescriptionEntity);
+
             await _unitOfWork.CompleteAsync();
 
             _logger.LogInformation($"Update Prescription successfully with ID : {prescriptionEntity.Id}");

@@ -19,19 +19,19 @@ namespace Clinic_Management_API.Core.Services
             _mapper = mapper;
             _logger = logger;
         }
-        public async Task<bool> ChangeStatusAsync(int AppointmentId, int Status)
+        public async Task<bool> ChangeStatusAsync(int appointmentId, AppointmentStatus status)
         {
-            _logger.LogInformation($"Starting Change Status for Appointment ID : {AppointmentId}");
+            _logger.LogInformation($"Starting Change Status for Appointment ID : {appointmentId}");
 
-            var appointmentEntity = await _unitOfWork.Appointments.GetByIdAsync(AppointmentId);
+            var appointmentEntity = await _unitOfWork.Appointments.GetByIdAsync(appointmentId);
 
             if (appointmentEntity == null)
             {
-                _logger.LogWarning($"Appointment ID not exists for ID : {AppointmentId}");
-                throw new KeyNotFoundException($"Appointment with ID :{AppointmentId} not exist ");
+                _logger.LogWarning($"Appointment ID not exists for ID : {appointmentId}");
+                throw new KeyNotFoundException($"Appointment with ID :{appointmentId} not exist ");
             }
 
-            appointmentEntity.Status = (AppointmentStatus)Status;
+            appointmentEntity.Status = status;
 
             _unitOfWork.Appointments.Update(appointmentEntity);
 
@@ -71,7 +71,14 @@ namespace Clinic_Management_API.Core.Services
             await _unitOfWork.Appointments.AddAsync(appointmentEntity);
             await _unitOfWork.CompleteAsync();
 
-            return _mapper.Map<AppointmentResponseDto>(appointmentEntity);
+            var appointmentWithDetails = await _unitOfWork.Appointments.GetByIdWithDetails(appointmentEntity.Id);
+
+            if (appointmentEntity == null)
+            {
+                throw new InvalidOperationException("Appointment was created but could not be retrieved.");
+            }
+
+            return _mapper.Map<AppointmentResponseDto>(appointmentWithDetails);
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -103,22 +110,20 @@ namespace Clinic_Management_API.Core.Services
                 (!filter.PatientId.HasValue || a.PatientId == filter.PatientId.Value) &&
                 (!filter.AppointmentDate.HasValue || a.AppointmentDate == filter.AppointmentDate.Value);
 
-            var appointmentEntity = await _unitOfWork.Appointments.GetPagedAsync(
+            var appointmentEntity = await _unitOfWork.Appointments.GetPagedWithDetailsAsync(
                 searchPredicit,
                 filter.PageNumber,
                 filter.PageSize
                 );
 
             return _mapper.Map<IReadOnlyList<AppointmentResponseDto>>(appointmentEntity);
-
-           
         }
 
         public async Task<AppointmentResponseDto?> GetByIdAsync(int id)
         {
             _logger.LogInformation($"Starting Get Appointment for ID : {id}");
 
-            var appointmentEntity = await _unitOfWork.Appointments.GetByIdAsync(id);
+            var appointmentEntity = await _unitOfWork.Appointments.GetByIdWithDetails(id);
 
             if (appointmentEntity == null)
             {
@@ -156,12 +161,6 @@ namespace Clinic_Management_API.Core.Services
         {
             _logger.LogInformation($"Starting Update Appointment for ID : {id}");
 
-            if (id != dto.Id)
-            {
-                _logger.LogWarning($"Update failed. Route ID {id} does not match DTO ID {dto.Id}.");
-                throw new KeyNotFoundException("Route ID does not match Payload ID.");
-            }
-
             var appointmentEntity = await _unitOfWork.Appointments.GetByIdAsync(id);
 
             if (appointmentEntity == null)
@@ -192,8 +191,6 @@ namespace Clinic_Management_API.Core.Services
             }
 
             _mapper.Map(dto, appointmentEntity);
-
-            _unitOfWork.Appointments.Update(appointmentEntity);
 
             await _unitOfWork.CompleteAsync();
 

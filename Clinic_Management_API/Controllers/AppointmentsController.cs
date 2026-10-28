@@ -8,7 +8,7 @@ namespace Clinic_Management_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin,Receptionist")]
+    //[Authorize(Roles = "Admin,Receptionist")]
     public class AppointmentsController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
@@ -55,9 +55,9 @@ namespace Clinic_Management_API.Controllers
         }
 
         [HttpPut("{appointmentId}/status")]
-        public async Task<IActionResult> ChangeStatus(int AppointmentId,[FromQuery] int Status)
+        public async Task<IActionResult> ChangeStatus(int AppointmentId,[FromBody] UpdateAppointmentStatusDto dto)
         {
-            await _appointmentService.ChangeStatusAsync(AppointmentId, Status);
+            await _appointmentService.ChangeStatusAsync(AppointmentId, dto.Status);
             return NoContent();
 
         }

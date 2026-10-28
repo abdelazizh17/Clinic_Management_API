@@ -9,7 +9,7 @@
         public string LicenseNumber { get; set; } = null!;
         public decimal ConsultationFee { get; set; }
         public bool IsActive { get; set; }
-        public string Specialty { get; set; } = null!;
+        public SpecialtySummaryDto Specialty { get; set; } = null!;
 
     }
 }

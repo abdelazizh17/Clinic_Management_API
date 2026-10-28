@@ -105,12 +105,6 @@ namespace Clinic_Management_API.Core.Services
         {
             _logger.LogInformation($"Starting Update medication for ID : {id}");
 
-            if (id != dto.Id)
-            {
-                _logger.LogWarning($"Update failed. Route ID {id} does not match DTO ID {dto.Id}.");
-                throw new InvalidOperationException("Route ID does not match Payload ID.");
-            }
-
             var medicationEntity = await _unitOfWork.Medications.GetByIdAsync(id);
 
             if (medicationEntity == null)
@@ -131,7 +125,6 @@ namespace Clinic_Management_API.Core.Services
 
             _mapper.Map(dto, medicationEntity);
 
-            _unitOfWork.Medications.Update(medicationEntity);
             await _unitOfWork.CompleteAsync();
 
             _logger.LogInformation($"Update Medication successfully with ID : {medicationEntity.Id}");

@@ -7,13 +7,26 @@ namespace Clinic_Management_API.Core.Mappings
     {
         public MedicationProfile()
         {
-            CreateMap<CreateMedicationDto,Medication>().ReverseMap();
+            CreateMap<CreateMedicationDto,Medication>();
 
             CreateMap<UpdateMedicationDto, Medication>()
-                .ReverseMap()
-                .ForAllMembers(opts => opts.Condition((src,dest,srcMember) => srcMember != null));
+                .ForMember(dest => dest.Name,
+                    opt => opt.PreCondition(src => src.Name != null))
 
-            CreateMap<MedicationResponseDto, Medication>().ReverseMap();
+                .ForMember(dest => dest.Description,
+                    opt => opt.PreCondition(src => src.Description != null))
+
+                .ForMember(dest => dest.StockQuantity,
+                    opt => opt.PreCondition(src => src.StockQuantity.HasValue))
+
+                .ForMember(dest => dest.Price,
+                    opt => opt.PreCondition(src => src.Price.HasValue))
+
+                .ForMember(dest => dest.IsActive,
+                    opt => opt.PreCondition(src => src.IsActive.HasValue));
+
+
+            CreateMap<MedicationResponseDto, Medication>();
 
         }
     }

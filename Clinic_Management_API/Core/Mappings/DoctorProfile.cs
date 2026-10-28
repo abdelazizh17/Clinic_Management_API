@@ -10,14 +10,31 @@ namespace Clinic_Management_API.Core.Mappings
         {
             CreateMap<CreateDoctorDto,Doctor>().ReverseMap();
 
-            CreateMap<UpdateDoctorDto,Doctor>()
-                .ReverseMap()
-                .ForAllMembers(opts => opts.Condition((src,dest,srcMember) => srcMember != null));
+            CreateMap<UpdateDoctorDto, Doctor>()
+                .ForMember(dest => dest.FullName,
+                    opt => opt.PreCondition(src => src.FullName != null))
 
-            CreateMap<DoctorResponseDto, Doctor>()
-                .ReverseMap()
-                .ForMember(dest => dest.Specialty,
-                           opt => opt.MapFrom(src => src.Specialty != null ? src.Specialty.Name : string.Empty));
+                .ForMember(dest => dest.Phone,
+                    opt => opt.PreCondition(src => src.Phone != null))
+
+                .ForMember(dest => dest.Email,
+                    opt => opt.PreCondition(src => src.Email != null))
+
+                .ForMember(dest => dest.LicenseNumber,
+                    opt => opt.PreCondition(src => src.LicenseNumber != null))
+
+                .ForMember(dest => dest.ConsultationFee,
+                    opt => opt.PreCondition(src => src.ConsultationFee.HasValue))
+
+                .ForMember(dest => dest.IsActive,
+                    opt => opt.PreCondition(src => src.IsActive.HasValue))
+
+                .ForMember(dest => dest.SpecialtyId,
+                    opt => opt.PreCondition(src => src.SpecialtyId.HasValue));
+
+            CreateMap<Specialty, SpecialtySummaryDto>();
+
+            CreateMap<DoctorResponseDto, Doctor>();
         }
     }
 }

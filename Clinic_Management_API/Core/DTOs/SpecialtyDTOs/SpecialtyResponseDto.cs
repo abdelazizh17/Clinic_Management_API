@@ -1,4 +1,4 @@
-﻿using Clinic_Management_API.Core.DTOs.DoctorDTOs;
+﻿using Clinic_Management_API.Core.DTOs.AppointmentDTOs;
 
 namespace Clinic_Management_API.Core.DTOs.SpecialtyDTOs
 {
@@ -7,6 +7,6 @@ namespace Clinic_Management_API.Core.DTOs.SpecialtyDTOs
         public int Id { get; set; }
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
-        public List<DoctorResponseDto> Doctors { get; set; } = new();
+        public List<DoctorSummaryDto> Doctors { get; set; } = new();
     }
 }

@@ -4,10 +4,37 @@ using Clinic_Management_API.Infrastructure.Data;
 
 namespace Clinic_Management_API.Infrastructure.Repositories
 {
-    public class SpecialtyRepository : GenericRepository<Specialty>, ISpecialtyRepository
+    public class SpecialtyRepository
+        : GenericRepository<Specialty>, ISpecialtyRepository
     {
-        public SpecialtyRepository(ClinicDBContext context) : base(context)
+        public SpecialtyRepository(ClinicDBContext context)
+            : base(context)
         {
+        }
+
+        private IQueryable<Specialty> QueryWithDetails()
+        {
+            return _context.Specialties
+                .Include(s => s.Doctors)
+                .AsSplitQuery();
+        }
+
+        public async Task<Specialty?> GetByIdWithDetailsAsync(int id)
+        {
+            return await QueryWithDetails().FirstOrDefaultAsync(s => s.Id == id);
+        }
+
+        public async Task<IReadOnlyList<Specialty>> GetPagedWithSpecAsync(Expression<Func<Specialty, bool>>? predicate, int pageNumber, int pageSize)
+        {
+            IQueryable<Specialty> query = QueryWithDetails();
+
+            return await ApplyPaginationAsync(
+                query,
+                predicate,
+                (Expression<Func<Specialty, int>>?)null,
+                true,
+                pageNumber,
+                pageSize);
         }
 
         public async Task<bool> IsSpecialtyNameExistsAsync(string name)

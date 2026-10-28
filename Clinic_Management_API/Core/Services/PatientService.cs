@@ -35,9 +35,11 @@ namespace Clinic_Management_API.Core.Services
 
             await _unitOfWork.CompleteAsync();
 
+            var patientWithDetails = await _unitOfWork.Patients.GetByIdWithDetailsAsync(patientEntity.Id);
+
             _logger.LogInformation($"Patient created successfully with ID {patientEntity.Id}");
 
-            return _mapper.Map<PatientResponseDto>(patientEntity);
+            return _mapper.Map<PatientResponseDto>(patientWithDetails);
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -74,7 +76,7 @@ namespace Clinic_Management_API.Core.Services
                                       (p.Email != null && p.Email.ToLower().Contains(term));
             }
 
-            var patientEntity = await _unitOfWork.Patients.GetPagedAsync(
+            var patientEntity = await _unitOfWork.Patients.GetPagedWithSpecAsync(
                 searchPredicte,
                 filter.PageNumber,
                 filter.PageSize
@@ -88,7 +90,7 @@ namespace Clinic_Management_API.Core.Services
         {
             _logger.LogInformation($"Starting Get patient for ID : {id}");
 
-            var patientEntity = await _unitOfWork.Patients.GetByIdAsync(id);
+            var patientEntity = await _unitOfWork.Patients.GetByIdWithDetailsAsync(id);
 
             if (patientEntity == null)
             {
@@ -108,7 +110,7 @@ namespace Clinic_Management_API.Core.Services
         {
             Expression<Func<Patient, bool>>? searchPredicte = p => p.Appointments.Count() > 1;
 
-            var patientEntity = await _unitOfWork.Patients.GetPagedAsync(
+            var patientEntity = await _unitOfWork.Patients.GetPagedWithSpecAsync(
                 searchPredicte,
                 filter.PageNumber,
                 filter.PageSize
@@ -121,13 +123,7 @@ namespace Clinic_Management_API.Core.Services
         {
             _logger.LogInformation($"Starting Update patient for ID : {id}");
 
-            if (id != updatePatientDto.Id)
-            {
-                _logger.LogWarning($"Update failed. Route ID {id} does not match DTO ID {updatePatientDto.Id}.");
-                throw new InvalidOperationException("Route ID does not match Payload ID.");
-            }
-
-            var patientEntity = await _unitOfWork.Patients.GetByIdAsync(id);
+            var patientEntity = await _unitOfWork.Patients.GetByIdWithDetailsAsync(id);
 
             if (patientEntity == null)
             {
@@ -136,8 +132,6 @@ namespace Clinic_Management_API.Core.Services
             }
 
             _mapper.Map(updatePatientDto, patientEntity);
-
-            _unitOfWork.Patients.Update(patientEntity);
 
             await _unitOfWork.CompleteAsync();
 

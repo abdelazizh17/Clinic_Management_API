@@ -74,7 +74,7 @@ namespace Clinic_Management_API.Core.Services
                                       (s.Description != null && s.Description.ToLower().Contains(term));
             }
 
-            var specialties = await _unitOfWork.Specialties.GetPagedAsync(
+            var specialties = await _unitOfWork.Specialties.GetPagedWithSpecAsync(
                 searchPredicate,
                 filter.PageNumber,
                 filter.PageSize
@@ -87,7 +87,7 @@ namespace Clinic_Management_API.Core.Services
         {
             _logger.LogInformation($"Starting Get specialty for ID: {id}");
 
-            var specialtyEntity = await _unitOfWork.Specialties.GetByIdAsync(id);
+            var specialtyEntity = await _unitOfWork.Specialties.GetByIdWithDetailsAsync(id);
 
             if (specialtyEntity == null)
             {
@@ -126,7 +126,6 @@ namespace Clinic_Management_API.Core.Services
 
             _mapper.Map(dto, specialtyEntity);
 
-            _unitOfWork.Specialties.Update(specialtyEntity);
             await _unitOfWork.CompleteAsync();
 
             _logger.LogInformation($"Update Specialty successfully for ID: {id}");

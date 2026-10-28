@@ -20,15 +20,15 @@ namespace Clinic_Management_API.Infrastructure.Repositories
             return await ApplyPaginationAsync(_context.Set<T>(), predicate, (Expression<Func<T, int>>?)null, true, pageNumber, pageSize);
         }
 
-        public async Task<IReadOnlyList<T>> GetPagedAsync<TKey>(Expression<Func<T, bool>>? predicate, Expression<Func<T, TKey>>? orderByDescending, bool isAscending, int pageNumber, int pageSize)
+        public async Task<IReadOnlyList<T>> GetPagedAsync<TKey>(Expression<Func<T, bool>>? predicate, Expression<Func<T, TKey>>? orderBy, bool isAscending, int pageNumber, int pageSize)
         {
-            return await ApplyPaginationAsync(_context.Set<T>(), predicate, orderByDescending, isAscending, pageNumber, pageSize);
+            return await ApplyPaginationAsync(_context.Set<T>(), predicate, orderBy, isAscending, pageNumber, pageSize);
         }
 
         protected async Task<IReadOnlyList<T>> ApplyPaginationAsync<TKey>
             (IQueryable<T> query,
             Expression<Func<T, bool>>? predicate,
-            Expression<Func<T, TKey>>? orderByDescending,
+            Expression<Func<T, TKey>>? orderBy,
             bool isAscending,
             int pageNumber,
             int pageSize)
@@ -38,15 +38,15 @@ namespace Clinic_Management_API.Infrastructure.Repositories
                 query = query.Where(predicate);
             }
 
-            if (orderByDescending != null)
+            if (orderBy != null)
             {
                 if (isAscending)
                 {
-                    query = query.OrderBy(orderByDescending);
+                    query = query.OrderBy(orderBy);
                 }
                 else
                 {
-                    query = query.OrderByDescending(orderByDescending);
+                    query = query.OrderByDescending(orderBy);
                 }
             }
 

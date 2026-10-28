@@ -1,4 +1,4 @@
-﻿namespace Clinic_Management_API.Core.DTOs.AppointmentDTOs
+﻿namespace Clinic_Management_API.Core.DTOs.PatientDTOs
 {
     public class AppointmentSummaryDto
     {

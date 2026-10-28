@@ -1,5 +1,4 @@
-﻿using Clinic_Management_API.Core.DTOs.AppointmentDTOs;
-using Clinic_Management_API.Core.DTOs.PrescriptionDTOs;
+﻿using Clinic_Management_API.Core.DTOs.PrescriptionDTOs;
 
 namespace Clinic_Management_API.Core.DTOs.PatientDTOs
 {
