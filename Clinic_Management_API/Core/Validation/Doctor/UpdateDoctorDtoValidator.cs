@@ -8,9 +8,6 @@ namespace Clinic_Management_API.Core.Validation.Doctor
     {
         public UpdateDoctorDtoValidator()
         {
-            RuleFor(d => d.Id)
-                .GreaterThan(0).WithMessage("Valid Doctor ID is required");
-
             RuleFor(d => d.FullName)
               .NotEmpty().WithMessage("Doctor Name is Required")
               .MaximumLength(50).WithMessage("The name cannot exceed 50 characters")

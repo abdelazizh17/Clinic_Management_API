@@ -13,7 +13,11 @@ namespace Clinic_Management_API.Infrastructure.Repositories
         {
             return _context.Patients
                 .Include(p => p.Appointments)
+                    .ThenInclude(a => a.Doctor)
                 .Include(p => p.Prescriptions)
+                    .ThenInclude(pr => pr.Doctor)
+                .Include(p => p.Prescriptions)
+                    .ThenInclude(pr => pr.PrescriptionItems)
                 .AsSplitQuery();
         }
         public async Task<Patient?> GetByIdWithDetailsAsync(int id)

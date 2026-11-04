@@ -7,8 +7,6 @@ namespace Clinic_Management_API.Core.Validation.Medication
     {
         public UpdateMedicationDtoValidator()
         {
-            RuleFor(m => m.Id).GreaterThan(0).WithMessage("Medication ID must be greater than 0");
-
             RuleFor(m => m.Name)
               .NotEmpty().WithMessage("Name is Required")
               .MaximumLength(50).WithMessage("Name cannot exceed 50 characters")

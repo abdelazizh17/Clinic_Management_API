@@ -7,7 +7,7 @@ namespace Clinic_Management_API.Core.DTOs.PrescriptionDTOs
     {
         public int Id { get; set; }
         public PatientSummaryDto Patient { get; set; } = null!;
-        public string DoctorSummaryDto { get; set; } = null!;
+        public DoctorSummaryDto Doctor { get; set; } = null!;
         public int AppointmentId { get; set; }
         public DateTime PrescriptionDate { get; set; }
         public string? Notes { get; set; }

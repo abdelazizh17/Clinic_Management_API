@@ -1,15 +1,14 @@
-
-using Clinic_Management_API.Core.Entities;
 using Clinic_Management_API.Core.Interfaces.Repositories;
 using Clinic_Management_API.Core.Interfaces.Services;
-using Clinic_Management_API.Core.Mappings;
 using Clinic_Management_API.Core.Services;
 using Clinic_Management_API.Errors;
 using Clinic_Management_API.Infrastructure.Data;
 using Clinic_Management_API.Infrastructure.Repositories;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -24,7 +23,6 @@ namespace Clinic_Management_API
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
@@ -53,7 +51,13 @@ namespace Clinic_Management_API
             builder.Services.AddScoped<IUserService, UserService>();
 
 
-            builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(PatientProfile).Assembly));
+            var mapsterConfig = new TypeAdapterConfig();
+            mapsterConfig.Scan(typeof(Program).Assembly);
+            builder.Services.AddSingleton(mapsterConfig);
+            builder.Services.AddMapster();
+
+            builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+            builder.Services.AddFluentValidationAutoValidation();
 
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddProblemDetails();

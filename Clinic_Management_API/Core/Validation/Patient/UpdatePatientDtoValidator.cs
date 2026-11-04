@@ -9,7 +9,6 @@ namespace Clinic_Management_API.Core.Validation.Patient
     {
         public UpdatePatientDtoValidator()
         {
-            RuleFor(p => p.Id).GreaterThan(0).WithMessage("Valid Patient ID is required.");
 
             RuleFor(x => x.DateOfBirth!.Value)
             .MustBeValidBirthDate()
