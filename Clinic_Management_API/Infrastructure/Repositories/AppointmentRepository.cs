@@ -1,4 +1,5 @@
 ﻿using Clinic_Management_API.Core.Entities;
+using Clinic_Management_API.Core.Enums;
 using Clinic_Management_API.Core.Interfaces.Repositories;
 using Clinic_Management_API.Infrastructure.Data;
 
@@ -35,6 +36,13 @@ namespace Clinic_Management_API.Infrastructure.Repositories
             return await QueryWithDetails()
                 .Where(a => a.DoctorId == doctorId && a.AppointmentDate == dateTime)
                 .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<Appointment>> GetScheduledBeforeAsync(DateOnly date)
+        {
+            return await _context.Appointments
+                .Where(a => a.Status == AppointmentStatus.Scheduled && a.AppointmentDate <= date)
                 .ToListAsync();
         }
 

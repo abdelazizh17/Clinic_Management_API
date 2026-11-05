@@ -60,7 +60,7 @@ namespace Clinic_Management_API.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("Clinic_Management_API.Core.Entities.Doctor", b =>
@@ -113,7 +113,7 @@ namespace Clinic_Management_API.Migrations
 
                     b.HasIndex("SpecialtyId");
 
-                    b.ToTable("Doctors");
+                    b.ToTable("Doctors", (string)null);
                 });
 
             modelBuilder.Entity("Clinic_Management_API.Core.Entities.Medication", b =>
@@ -149,7 +149,7 @@ namespace Clinic_Management_API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Medications");
+                    b.ToTable("Medications", (string)null);
                 });
 
             modelBuilder.Entity("Clinic_Management_API.Core.Entities.Patient", b =>
@@ -200,7 +200,7 @@ namespace Clinic_Management_API.Migrations
                     b.HasIndex("Phone")
                         .IsUnique();
 
-                    b.ToTable("Patients");
+                    b.ToTable("Patients", (string)null);
                 });
 
             modelBuilder.Entity("Clinic_Management_API.Core.Entities.Payment", b =>
@@ -236,7 +236,7 @@ namespace Clinic_Management_API.Migrations
                     b.HasIndex("AppointmentId")
                         .IsUnique();
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("Clinic_Management_API.Core.Entities.Prescription", b =>
@@ -272,7 +272,7 @@ namespace Clinic_Management_API.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Prescriptions");
+                    b.ToTable("Prescriptions", (string)null);
                 });
 
             modelBuilder.Entity("Clinic_Management_API.Core.Entities.PrescriptionItem", b =>
@@ -307,7 +307,7 @@ namespace Clinic_Management_API.Migrations
 
                     b.HasIndex("MedicationId");
 
-                    b.ToTable("PrescriptionItems");
+                    b.ToTable("PrescriptionItems", (string)null);
                 });
 
             modelBuilder.Entity("Clinic_Management_API.Core.Entities.Specialty", b =>
@@ -332,7 +332,7 @@ namespace Clinic_Management_API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Specialties");
+                    b.ToTable("Specialties", (string)null);
 
                     b.HasData(
                         new

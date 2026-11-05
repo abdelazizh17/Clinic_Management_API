@@ -73,7 +73,7 @@ namespace Clinic_Management_API.Core.Services
 
             var appointmentWithDetails = await _unitOfWork.Appointments.GetByIdWithDetails(appointmentEntity.Id);
 
-            if (appointmentEntity == null)
+            if (appointmentWithDetails == null)
             {
                 throw new InvalidOperationException("Appointment was created but could not be retrieved.");
             }

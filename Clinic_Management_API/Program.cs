@@ -1,10 +1,12 @@
 using Clinic_Management_API.Core.Interfaces.Repositories;
 using Clinic_Management_API.Core.Interfaces.Services;
+using Clinic_Management_API.Core.Jobs;
 using Clinic_Management_API.Core.Services;
 using Clinic_Management_API.Errors;
 using Clinic_Management_API.Infrastructure.Data;
 using Clinic_Management_API.Infrastructure.Repositories;
 using FluentValidation;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -49,6 +51,8 @@ namespace Clinic_Management_API
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IUserService, UserService>();
+
+            builder.Services.AddScoped<NoShowAppointmentJob>();
 
 
             var mapsterConfig = new TypeAdapterConfig();
@@ -104,7 +108,15 @@ namespace Clinic_Management_API
                 c.IncludeXmlComments(xmlPath);
             });
 
+            builder.Services.AddHangfire(configuration => configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(
+                    builder.Configuration.GetConnectionString("HangfireConnection")
+                ));
 
+            builder.Services.AddHangfireServer();
 
             var app = builder.Build();
 
@@ -153,6 +165,16 @@ namespace Clinic_Management_API
                 }
             }
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var recurringJobs = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+
+                recurringJobs.AddOrUpdate<NoShowAppointmentJob>(
+                    "no-show-appointments",
+                    job => job.MarkNoShowAsync(),
+                    Cron.Daily);
+            }
+
             app.UseExceptionHandler();
 
             // Configure the HTTP request pipeline.
@@ -163,6 +185,8 @@ namespace Clinic_Management_API
             }
 
             app.UseCustomStatusCodePages();
+
+            app.UseHangfireDashboard("/hangfire");
 
             app.UseHttpsRedirection();
 
