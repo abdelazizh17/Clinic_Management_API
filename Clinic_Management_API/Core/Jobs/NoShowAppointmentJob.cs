@@ -39,7 +39,7 @@ namespace Clinic_Management_API.Core.Jobs
 
             await _unitOfWork.CompleteAsync();
 
-            _logger.LogInformation($"{count} appointments were marked as NoShow.");
+            _logger.LogInformation("{Count} appointments were marked as NoShow", count);
         }
     }
 }

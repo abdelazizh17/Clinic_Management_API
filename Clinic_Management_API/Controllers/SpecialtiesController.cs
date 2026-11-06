@@ -1,12 +1,12 @@
 ﻿using Clinic_Management_API.Core.DTOs.FilterDTOs;
 using Clinic_Management_API.Core.DTOs.SpecialtyDTOs;
 using Clinic_Management_API.Core.Interfaces.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic_Management_API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,Doctor,Receptionist")]
     public class SpecialtiesController : ControllerBase
     {
         private readonly ISpecialtyService _specialtyService;
@@ -31,13 +31,19 @@ namespace Clinic_Management_API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateSpecialtyDto dto)
         {
             var createdSpecialty = await _specialtyService.CreateAsync(dto);
-            return Ok(createdSpecialty);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = createdSpecialty.Id },
+                createdSpecialty);
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateSpecialtyDto dto)
         {
             await _specialtyService.UpdateAsync(id, dto);
@@ -45,6 +51,7 @@ namespace Clinic_Management_API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             await _specialtyService.DeleteAsync(id);

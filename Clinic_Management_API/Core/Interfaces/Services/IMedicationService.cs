@@ -1,5 +1,7 @@
-﻿using Clinic_Management_API.Core.DTOs.FilterDTOs;
+﻿using Clinic_Management_API.Core.DTOs.Common;
+using Clinic_Management_API.Core.DTOs.FilterDTOs;
 using Clinic_Management_API.Core.DTOs.MedicationDTOs;
+
 namespace Clinic_Management_API.Core.Interfaces.Services
 {
     public interface IMedicationService
@@ -8,6 +10,6 @@ namespace Clinic_Management_API.Core.Interfaces.Services
         Task<bool> UpdateAsync(int id, UpdateMedicationDto dto);
         Task<bool> DeleteAsync(int id);
         Task<MedicationResponseDto?> GetByIdAsync(int id);
-        Task<IReadOnlyList<MedicationResponseDto>> GetAllAsync(BaseFilterDto filter);
+        Task<PagedResult<MedicationResponseDto>> GetAllAsync(BaseFilterDto filter);
     }
 }

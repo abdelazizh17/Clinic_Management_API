@@ -1,6 +1,192 @@
-@Clinic_Management_API_HostAddress = http://localhost:5106
+@host = http://localhost:5106
+@token = PASTE_YOUR_JWT_HERE
 
-GET {{Clinic_Management_API_HostAddress}}/weatherforecast/
-Accept: application/json
+### ------------------------------------------------------------
+### AUTH
+### ------------------------------------------------------------
 
-###
+# @name login
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "emailOrUsername": "admin@clinic.com",
+  "password": "Admin@12345"
+}
+
+### Register a new user (Admin only)
+POST {{host}}/api/auth/register
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "userName": "receptionist01",
+  "password": "Receptionist@123",
+  "email": "receptionist01@clinic.com",
+  "phone": "01012345678"
+}
+
+### Assign a role to a user (Admin only)
+POST {{host}}/api/users/assign-role
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "email": "receptionist01@clinic.com",
+  "roleName": "Receptionist"
+}
+
+### ------------------------------------------------------------
+### DOCTORS
+### ------------------------------------------------------------
+
+### Get all doctors (paginated)
+GET {{host}}/api/doctors?pageNumber=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### Get doctor by id
+GET {{host}}/api/doctors/1
+Authorization: Bearer {{token}}
+
+### Create doctor
+POST {{host}}/api/doctors
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "fullName": "Dr. Ahmed Hassan",
+  "phone": "01011112222",
+  "email": "ahmed.hassan@clinic.com",
+  "licenseNumber": "LIC-2026-001",
+  "consultationFee": 250,
+  "specialtyId": 1
+}
+
+### ------------------------------------------------------------
+### PATIENTS
+### ------------------------------------------------------------
+
+### Get all patients (paginated)
+GET {{host}}/api/patients?pageNumber=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### Get patient by id
+GET {{host}}/api/patients/1
+Authorization: Bearer {{token}}
+
+### Create patient
+POST {{host}}/api/patients
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "fullName": "Mona Ali",
+  "dateOfBirth": "1995-04-12",
+  "gender": "Female",
+  "phone": "01022223333",
+  "email": "mona.ali@example.com",
+  "address": "Cairo"
+}
+
+### ------------------------------------------------------------
+### APPOINTMENTS
+### ------------------------------------------------------------
+
+### Get all appointments (paginated + filters)
+GET {{host}}/api/appointments?pageNumber=1&pageSize=10&doctorId=1
+Authorization: Bearer {{token}}
+
+### Get appointment by id
+GET {{host}}/api/appointments/1
+Authorization: Bearer {{token}}
+
+### Create appointment
+POST {{host}}/api/appointments
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "appointmentDate": "2026-12-01",
+  "startTime": "10:00:00",
+  "endTime": "10:30:00",
+  "notes": "First visit",
+  "patientId": 1,
+  "doctorId": 1
+}
+
+### Change appointment status
+PUT {{host}}/api/appointments/1/status
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "status": "Completed"
+}
+
+### ------------------------------------------------------------
+### MEDICATIONS
+### ------------------------------------------------------------
+
+### Get all medications (paginated)
+GET {{host}}/api/medications?pageNumber=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### Create medication (Admin only)
+POST {{host}}/api/medications
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Paracetamol 500mg",
+  "description": "Pain and fever relief",
+  "stockQuantity": 100,
+  "price": 15,
+  "isActive": true
+}
+
+### ------------------------------------------------------------
+### SPECIALTIES
+### ------------------------------------------------------------
+
+### Get all specialties (paginated)
+GET {{host}}/api/specialties?pageNumber=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### ------------------------------------------------------------
+### PRESCRIPTIONS
+### ------------------------------------------------------------
+
+### Get all prescriptions (paginated)
+GET {{host}}/api/prescriptions?pageNumber=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### Get prescription by appointment
+GET {{host}}/api/prescriptions/appointment/1
+Authorization: Bearer {{token}}
+
+### Create prescription (Doctor only)
+POST {{host}}/api/prescriptions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "patientId": 1,
+  "doctorId": 1,
+  "appointmentId": 1,
+  "notes": "Take after meals",
+  "prescriptionItems": [
+    {
+      "medicationId": 1,
+      "dosage": "1 tablet",
+      "frequency": "Every 8 hours",
+      "duration": "5 days",
+      "instructions": "After meals"
+    }
+  ]
+}
+
+### ------------------------------------------------------------
+### HEALTH
+### ------------------------------------------------------------
+
+GET {{host}}/health

@@ -1,4 +1,5 @@
-﻿using Clinic_Management_API.Core.DTOs.FilterDTOs;
+﻿using Clinic_Management_API.Core.DTOs.Common;
+using Clinic_Management_API.Core.DTOs.FilterDTOs;
 using Clinic_Management_API.Core.DTOs.SpecialtyDTOs;
 
 namespace Clinic_Management_API.Core.Interfaces.Services
@@ -9,6 +10,6 @@ namespace Clinic_Management_API.Core.Interfaces.Services
         Task<bool> UpdateAsync(int id, UpdateSpecialtyDto dto);
         Task<bool> DeleteAsync(int id);
         Task<SpecialtyResponseDto?> GetByIdAsync(int id);
-        Task<IReadOnlyList<SpecialtyResponseDto>> GetAllAsync(BaseFilterDto filter);
+        Task<PagedResult<SpecialtyResponseDto>> GetAllAsync(BaseFilterDto filter);
     }
 }

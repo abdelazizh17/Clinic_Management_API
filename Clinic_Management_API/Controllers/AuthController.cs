@@ -1,11 +1,10 @@
 ﻿using Clinic_Management_API.Core.DTOs.AuthDTOs;
 using Clinic_Management_API.Core.Interfaces.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic_Management_API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -15,21 +14,23 @@ namespace Clinic_Management_API.Controllers
             _authService = authService;
         }
 
-
-        [HttpPost("Register")]
+        [HttpPost("register")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
             var user = await _authService.Register(dto);
-
             return Ok(user);
         }
 
-        [HttpPost("Login")]
+        [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             var user = await _authService.Login(dto);
 
-            return Ok(user);
+            return user.IsAuthenticated
+                ? Ok(user)
+                : Unauthorized(user);
         }
     }
 }

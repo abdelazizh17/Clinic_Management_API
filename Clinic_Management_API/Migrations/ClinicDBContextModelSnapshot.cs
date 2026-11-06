@@ -60,7 +60,7 @@ namespace Clinic_Management_API.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Appointments", (string)null);
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("Clinic_Management_API.Core.Entities.Doctor", b =>
@@ -113,7 +113,7 @@ namespace Clinic_Management_API.Migrations
 
                     b.HasIndex("SpecialtyId");
 
-                    b.ToTable("Doctors", (string)null);
+                    b.ToTable("Doctors");
                 });
 
             modelBuilder.Entity("Clinic_Management_API.Core.Entities.Medication", b =>
@@ -149,7 +149,7 @@ namespace Clinic_Management_API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Medications", (string)null);
+                    b.ToTable("Medications");
                 });
 
             modelBuilder.Entity("Clinic_Management_API.Core.Entities.Patient", b =>
@@ -200,43 +200,7 @@ namespace Clinic_Management_API.Migrations
                     b.HasIndex("Phone")
                         .IsUnique();
 
-                    b.ToTable("Patients", (string)null);
-                });
-
-            modelBuilder.Entity("Clinic_Management_API.Core.Entities.Payment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("Amount")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<int>("AppointmentId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppointmentId")
-                        .IsUnique();
-
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Patients");
                 });
 
             modelBuilder.Entity("Clinic_Management_API.Core.Entities.Prescription", b =>
@@ -272,7 +236,7 @@ namespace Clinic_Management_API.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Prescriptions", (string)null);
+                    b.ToTable("Prescriptions");
                 });
 
             modelBuilder.Entity("Clinic_Management_API.Core.Entities.PrescriptionItem", b =>
@@ -307,7 +271,7 @@ namespace Clinic_Management_API.Migrations
 
                     b.HasIndex("MedicationId");
 
-                    b.ToTable("PrescriptionItems", (string)null);
+                    b.ToTable("PrescriptionItems");
                 });
 
             modelBuilder.Entity("Clinic_Management_API.Core.Entities.Specialty", b =>
@@ -332,7 +296,7 @@ namespace Clinic_Management_API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Specialties", (string)null);
+                    b.ToTable("Specialties");
 
                     b.HasData(
                         new
@@ -595,17 +559,6 @@ namespace Clinic_Management_API.Migrations
                     b.Navigation("Specialty");
                 });
 
-            modelBuilder.Entity("Clinic_Management_API.Core.Entities.Payment", b =>
-                {
-                    b.HasOne("Clinic_Management_API.Core.Entities.Appointment", "Appointment")
-                        .WithOne("Payment")
-                        .HasForeignKey("Clinic_Management_API.Core.Entities.Payment", "AppointmentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Appointment");
-                });
-
             modelBuilder.Entity("Clinic_Management_API.Core.Entities.Prescription", b =>
                 {
                     b.HasOne("Clinic_Management_API.Core.Entities.Appointment", "Appointment")
@@ -705,8 +658,6 @@ namespace Clinic_Management_API.Migrations
 
             modelBuilder.Entity("Clinic_Management_API.Core.Entities.Appointment", b =>
                 {
-                    b.Navigation("Payment");
-
                     b.Navigation("Prescription")
                         .IsRequired();
                 });

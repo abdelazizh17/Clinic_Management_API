@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Clinic_Management_API.Errors
+﻿namespace Clinic_Management_API.Errors
 {
     public static class CustomStatusCodeMiddlewareExtensions
     {

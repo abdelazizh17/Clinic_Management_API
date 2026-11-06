@@ -10,7 +10,6 @@ namespace Clinic_Management_API.Infrastructure.Data
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Medication> Medications { get; set; }
         public DbSet<Patient> Patients { get; set; }
-        public DbSet<Payment> Payments { get; set; }
         public DbSet<Prescription> Prescriptions { get; set; }
         public DbSet<PrescriptionItem> PrescriptionItems { get; set; }
         public DbSet<Specialty> Specialties { get; set; }

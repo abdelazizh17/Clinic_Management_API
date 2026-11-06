@@ -1,12 +1,12 @@
 ﻿using Clinic_Management_API.Core.DTOs.FilterDTOs;
 using Clinic_Management_API.Core.DTOs.PatientDTOs;
 using Clinic_Management_API.Core.Interfaces.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic_Management_API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,Doctor,Receptionist")]
     public class PatientsController : ControllerBase
     {
         private readonly IPatientService _patientService;
@@ -24,7 +24,7 @@ namespace Clinic_Management_API.Controllers
         }
 
         [HttpGet("multiple-appointments")]
-        public async Task<IActionResult> GetPatientsWithMultipleAppointments(PaginationDto filter)
+        public async Task<IActionResult> GetPatientsWithMultipleAppointments([FromQuery] PaginationDto filter)
         {
             var patients = await _patientService.GetPatientsWithMultipleAppointments(filter);
             return Ok(patients);
@@ -38,20 +38,27 @@ namespace Clinic_Management_API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Receptionist")]
         public async Task<IActionResult> Create([FromBody] CreatePatientDto dto)
         {
             var createdPatient = await _patientService.CreateAsync(dto);
-            return Ok(createdPatient);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = createdPatient.Id },
+                createdPatient);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id,[FromBody] UpdatePatientDto dto)
+        [Authorize(Roles = "Admin,Receptionist")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdatePatientDto dto)
         {
-            await _patientService.UpdateAsync(id,dto);
+            await _patientService.UpdateAsync(id, dto);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Receptionist")]
         public async Task<IActionResult> Delete(int id)
         {
             await _patientService.DeleteAsync(id);

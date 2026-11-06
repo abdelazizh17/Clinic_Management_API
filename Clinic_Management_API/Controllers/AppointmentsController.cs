@@ -1,14 +1,12 @@
 ﻿using Clinic_Management_API.Core.DTOs.AppointmentDTOs;
 using Clinic_Management_API.Core.DTOs.FilterDTOs;
 using Clinic_Management_API.Core.Interfaces.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic_Management_API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "Admin,Receptionist")]
+    [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,Doctor,Receptionist")]
     public class AppointmentsController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
@@ -17,7 +15,6 @@ namespace Clinic_Management_API.Controllers
         {
             _appointmentService = appointmentService;
         }
-
 
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] AppointmentFilterDto filter)
@@ -34,20 +31,26 @@ namespace Clinic_Management_API.Controllers
         }
 
         [HttpGet("doctor/{doctorId}")]
-        public async Task<IActionResult> GetDoctorAppointments(int doctorId,[FromQuery] DateOnly dateTime)
+        public async Task<IActionResult> GetDoctorAppointments(int doctorId, [FromQuery] DateOnly dateTime)
         {
-           var appointments =  await _appointmentService.GetDoctorAppointmentsAsync(doctorId, dateTime);
-           return Ok(appointments);
+            var appointments = await _appointmentService.GetDoctorAppointmentsAsync(doctorId, dateTime);
+            return Ok(appointments);
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Receptionist")]
         public async Task<IActionResult> Create([FromBody] CreateAppointmentDto dto)
         {
             var createdAppointment = await _appointmentService.CreateAsync(dto);
-            return Ok(createdAppointment);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = createdAppointment.Id },
+                createdAppointment);
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Receptionist")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateAppointmentDto dto)
         {
             await _appointmentService.UpdateAsync(id, dto);
@@ -55,14 +58,14 @@ namespace Clinic_Management_API.Controllers
         }
 
         [HttpPut("{appointmentId}/status")]
-        public async Task<IActionResult> ChangeStatus(int AppointmentId,[FromBody] UpdateAppointmentStatusDto dto)
+        public async Task<IActionResult> ChangeStatus(int appointmentId, [FromBody] UpdateAppointmentStatusDto dto)
         {
-            await _appointmentService.ChangeStatusAsync(AppointmentId, dto.Status);
+            await _appointmentService.ChangeStatusAsync(appointmentId, dto.Status);
             return NoContent();
-
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Receptionist")]
         public async Task<IActionResult> Delete(int id)
         {
             await _appointmentService.DeleteAsync(id);

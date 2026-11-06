@@ -1,6 +1,8 @@
-﻿using Clinic_Management_API.Core.DTOs.DoctorDTOs;
+﻿using Clinic_Management_API.Core.DTOs.Common;
+using Clinic_Management_API.Core.DTOs.DoctorDTOs;
 using Clinic_Management_API.Core.DTOs.FilterDTOs;
 using Clinic_Management_API.Core.Entities;
+using Clinic_Management_API.Core.Exceptions;
 using Clinic_Management_API.Core.Interfaces.Repositories;
 using Clinic_Management_API.Core.Interfaces.Services;
 
@@ -18,16 +20,17 @@ namespace Clinic_Management_API.Core.Services
             _mapper = mapper;
             _logger = logger;
         }
+
         public async Task<DoctorResponseDto> CreateAsync(CreateDoctorDto dto)
         {
-            _logger.LogInformation($"Starting Doctor creation for {dto.FullName}");
+            _logger.LogInformation("Starting doctor creation for {FullName}", dto.FullName);
 
             var phoneExists = await _unitOfWork.Doctors.IsPhoneNumberExistsAsync(dto.Phone);
 
             if (phoneExists)
             {
-                _logger.LogWarning($"Doctor creation failed. Phone {dto.Phone} exists.");
-                throw new KeyNotFoundException("Phone number already exists.");
+                _logger.LogWarning("Doctor creation failed. Phone {Phone} already exists", dto.Phone);
+                throw new ConflictException("Phone number already exists.");
             }
 
             var doctorEntity = _mapper.Map<Doctor>(dto);
@@ -38,131 +41,152 @@ namespace Clinic_Management_API.Core.Services
 
             var doctorWithSpec = await _unitOfWork.Doctors.GetByIdWithSpecAsync(doctorEntity.Id);
 
-            _logger.LogInformation($"Doctor created successfully with ID {doctorEntity.Id}");
+            if (doctorWithSpec is null)
+            {
+                throw new NotFoundException("Doctor was created but could not be retrieved.");
+            }
+
+            _logger.LogInformation("Doctor created successfully with ID {DoctorId}", doctorEntity.Id);
 
             return _mapper.Map<DoctorResponseDto>(doctorWithSpec);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            _logger.LogInformation($"Starting delete Doctor for ID : {id}");
+            _logger.LogInformation("Starting delete doctor for ID {DoctorId}", id);
 
             var doctorEntity = await _unitOfWork.Doctors.GetByIdAsync(id);
 
-            if (doctorEntity == null)
+            if (doctorEntity is null)
             {
-                _logger.LogWarning($"Doctor deletion failed. ID {id} not exists.");
-                throw new KeyNotFoundException("Doctor ID not exists.");
+                _logger.LogWarning("Doctor deletion failed. ID {DoctorId} does not exist", id);
+                throw new NotFoundException("Doctor does not exist.");
             }
 
             _unitOfWork.Doctors.Delete(doctorEntity);
 
             await _unitOfWork.CompleteAsync();
 
-            _logger.LogInformation($"Doctor deleted successfully with ID {doctorEntity.Id}");
+            _logger.LogInformation("Doctor {DoctorId} deleted successfully", doctorEntity.Id);
 
             return true;
         }
 
-        public async Task<IReadOnlyList<DoctorResponseDto>> GetAllAsync(BaseFilterDto filter)
+        public async Task<PagedResult<DoctorResponseDto>> GetAllAsync(BaseFilterDto filter)
         {
-            Expression<Func<Doctor, bool>>? searchPredicte = null;
+            var searchPredicate = BuildSearchPredicate(filter.SearchTerm);
 
-            if (!string.IsNullOrEmpty(filter.SearchTerm))
-            {
-                var term = filter.SearchTerm.Trim().ToLower();
-
-                searchPredicte = d => d.FullName.ToLower().Contains(term) ||
-                                      d.Phone.Contains(term) ||
-                                      (d.Email != null && d.Email.ToLower().Contains(term));
-            }
-
-            var doctorEntity = await _unitOfWork.Doctors.GetPagedWithSpecAsync(
-                searchPredicte,
+            var doctorEntities = await _unitOfWork.Doctors.GetPagedWithSpecAsync(
+                searchPredicate,
                 filter.PageNumber,
-                filter.PageSize
-                );
+                filter.PageSize);
 
-            return _mapper.Map<IReadOnlyList<DoctorResponseDto>>(doctorEntity);
+            var totalCount = await _unitOfWork.Doctors.CountAsync(searchPredicate);
+
+            return new PagedResult<DoctorResponseDto>
+            {
+                Items = _mapper.Map<IReadOnlyList<DoctorResponseDto>>(doctorEntities),
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize,
+                TotalCount = totalCount
+            };
         }
 
         public async Task<DoctorResponseDto?> GetByIdAsync(int id)
         {
-            _logger.LogInformation($"Starting Get Doctor for ID : {id}");
+            _logger.LogInformation("Starting get doctor for ID {DoctorId}", id);
 
             var doctorEntity = await _unitOfWork.Doctors.GetByIdWithSpecAsync(id);
 
-            if (doctorEntity == null)
+            if (doctorEntity is null)
             {
-                _logger.LogWarning($"Doctor not exist with ID {id}.");
-                throw new KeyNotFoundException("Doctor not exists.");
+                _logger.LogWarning("Doctor does not exist with ID {DoctorId}", id);
+                throw new NotFoundException("Doctor does not exist.");
             }
 
             var doctorDto = _mapper.Map<DoctorResponseDto>(doctorEntity);
 
-            _logger.LogInformation($"Get Doctor successfully with ID : {doctorEntity.Id}");
+            _logger.LogInformation("Doctor {DoctorId} retrieved successfully", doctorEntity.Id);
 
             return doctorDto;
         }
 
-        public async Task<IReadOnlyList<DoctorResponseDto>> GetDoctorsWithMostAppointments(BaseFilterDto filter,bool isAscending)
+        public async Task<PagedResult<DoctorResponseDto>> GetDoctorsWithMostAppointments(BaseFilterDto filter, bool isAscending)
         {
-            Expression<Func<Doctor, bool>>? searchPredicte = null;
+            var searchPredicate = BuildSearchPredicate(filter.SearchTerm);
+            Expression<Func<Doctor, int>> orderByAppointmentsCount = d => d.Appointments.Count();
 
-            Expression<Func<Doctor, int>> orderByDescending = d => d.Appointments.Count();
-
-            if (!string.IsNullOrEmpty(filter.SearchTerm))
-            {
-                var term = filter.SearchTerm.Trim().ToLower();
-
-                searchPredicte = d => d.FullName.ToLower().Contains(term) ||
-                                      d.Phone.Contains(term) ||
-                                      (d.Email != null && d.Email.ToLower().Contains(term));
-            }
-
-            var doctorEntity = await _unitOfWork.Doctors.GetPagedWithSpecAsync(
-                searchPredicte,
-                orderByDescending,
+            var doctorEntities = await _unitOfWork.Doctors.GetPagedWithSpecAsync(
+                searchPredicate,
+                orderByAppointmentsCount,
                 isAscending,
                 filter.PageNumber,
-                filter.PageSize
-                );
+                filter.PageSize);
 
-            return _mapper.Map<IReadOnlyList<DoctorResponseDto>>(doctorEntity);
+            var totalCount = await _unitOfWork.Doctors.CountAsync(searchPredicate);
+
+            return new PagedResult<DoctorResponseDto>
+            {
+                Items = _mapper.Map<IReadOnlyList<DoctorResponseDto>>(doctorEntities),
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize,
+                TotalCount = totalCount
+            };
         }
 
-        public async Task<IReadOnlyList<DoctorResponseDto>> GetDoctorsBySpecialtyId(int specialtyId, PaginationDto filter)
+        public async Task<PagedResult<DoctorResponseDto>> GetDoctorsBySpecialtyId(int specialtyId, PaginationDto filter)
         {
-            Expression<Func<Doctor, bool>>? searchPredicte = d => d.SpecialtyId == specialtyId;
+            Expression<Func<Doctor, bool>> searchPredicate = d => d.SpecialtyId == specialtyId;
 
-            var doctorEntity = await _unitOfWork.Doctors.GetPagedWithSpecAsync(
-                searchPredicte,
+            var doctorEntities = await _unitOfWork.Doctors.GetPagedWithSpecAsync(
+                searchPredicate,
                 filter.PageNumber,
-                filter.PageSize
-                );
+                filter.PageSize);
 
-            return _mapper.Map<IReadOnlyList<DoctorResponseDto>>(doctorEntity);
+            var totalCount = await _unitOfWork.Doctors.CountAsync(searchPredicate);
+
+            return new PagedResult<DoctorResponseDto>
+            {
+                Items = _mapper.Map<IReadOnlyList<DoctorResponseDto>>(doctorEntities),
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize,
+                TotalCount = totalCount
+            };
         }
 
         public async Task<bool> UpdateAsync(int id, UpdateDoctorDto dto)
         {
-            _logger.LogInformation($"Starting Update Doctor for ID : {id}");
+            _logger.LogInformation("Starting update doctor for ID {DoctorId}", id);
 
             var doctorEntity = await _unitOfWork.Doctors.GetByIdWithSpecAsync(id);
 
-            if (doctorEntity == null)
+            if (doctorEntity is null)
             {
-                _logger.LogWarning($"Doctor not exist with ID {id}.");
-                throw new KeyNotFoundException("Doctor not exists.");
+                _logger.LogWarning("Doctor does not exist with ID {DoctorId}", id);
+                throw new NotFoundException("Doctor does not exist.");
             }
 
             _mapper.Map(dto, doctorEntity);
 
             await _unitOfWork.CompleteAsync();
 
-            _logger.LogInformation($"Update Doctor successfully with ID : {doctorEntity.Id}");
+            _logger.LogInformation("Doctor {DoctorId} updated successfully", doctorEntity.Id);
 
             return true;
+        }
+
+        private static Expression<Func<Doctor, bool>>? BuildSearchPredicate(string? searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return null;
+            }
+
+            var term = searchTerm.Trim().ToLower();
+
+            return d => d.FullName.ToLower().Contains(term) ||
+                        d.Phone.Contains(term) ||
+                        (d.Email != null && d.Email.ToLower().Contains(term));
         }
     }
 }

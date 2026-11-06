@@ -16,7 +16,6 @@ namespace Clinic_Management_API.Core.Entities
         public Patient Patient { get; set; } = null!;
         public int DoctorId { get; set; }
         public Doctor Doctor { get; set; } = null!;
-        public Payment? Payment{ get; set; }
 
     }
 }

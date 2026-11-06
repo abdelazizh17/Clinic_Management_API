@@ -7,8 +7,11 @@ namespace Clinic_Management_API.Core.Validation.Auth
     {
         public LoginDtoValidation()
         {
-            RuleFor(l => l.EmailOrUsername).NotEmpty().WithMessage("This Field must be required");
+            RuleFor(l => l.EmailOrUsername)
+                .NotEmpty().WithMessage("Email or username is required.");
 
+            RuleFor(l => l.Password)
+                .NotEmpty().WithMessage("Password is required.");
         }
     }
 }

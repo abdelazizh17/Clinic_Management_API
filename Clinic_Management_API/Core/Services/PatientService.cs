@@ -1,8 +1,11 @@
-﻿using Clinic_Management_API.Core.DTOs.PatientDTOs;
+﻿using Clinic_Management_API.Core.DTOs.Common;
+using Clinic_Management_API.Core.DTOs.FilterDTOs;
+using Clinic_Management_API.Core.DTOs.PatientDTOs;
+using Clinic_Management_API.Core.Entities;
+using Clinic_Management_API.Core.Exceptions;
 using Clinic_Management_API.Core.Interfaces.Repositories;
 using Clinic_Management_API.Core.Interfaces.Services;
-using Clinic_Management_API.Core.Entities;
-using Clinic_Management_API.Core.DTOs.FilterDTOs;
+
 namespace Clinic_Management_API.Core.Services
 {
     public class PatientService : IPatientService
@@ -17,18 +20,19 @@ namespace Clinic_Management_API.Core.Services
             _mapper = mapper;
             _logger = logger;
         }
+
         public async Task<PatientResponseDto> CreateAsync(CreatePatientDto createPatientDto)
         {
-            _logger.LogInformation($"Starting patient creation for {createPatientDto.FullName}");
+            _logger.LogInformation("Starting patient creation for {FullName}", createPatientDto.FullName);
 
             var phoneExists = await _unitOfWork.Patients.IsPhoneNumberExistsAsync(createPatientDto.Phone);
 
             if (phoneExists)
             {
-                _logger.LogWarning($"Patient creation failed. Phone {createPatientDto.Phone} exists.");
-                throw new InvalidOperationException("Phone number already exists.");
+                _logger.LogWarning("Patient creation failed. Phone {Phone} already exists", createPatientDto.Phone);
+                throw new ConflictException("Phone number already exists.");
             }
-            
+
             var patientEntity = _mapper.Map<Patient>(createPatientDto);
 
             await _unitOfWork.Patients.AddAsync(patientEntity);
@@ -37,108 +41,129 @@ namespace Clinic_Management_API.Core.Services
 
             var patientWithDetails = await _unitOfWork.Patients.GetByIdWithDetailsAsync(patientEntity.Id);
 
-            _logger.LogInformation($"Patient created successfully with ID {patientEntity.Id}");
+            if (patientWithDetails is null)
+            {
+                throw new NotFoundException("Patient was created but could not be retrieved.");
+            }
+
+            _logger.LogInformation("Patient created successfully with ID {PatientId}", patientEntity.Id);
 
             return _mapper.Map<PatientResponseDto>(patientWithDetails);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            _logger.LogInformation($"Starting delete patient for ID : {id}");
+            _logger.LogInformation("Starting delete patient for ID {PatientId}", id);
 
             var patientEntity = await _unitOfWork.Patients.GetByIdAsync(id);
 
-            if (patientEntity == null)
+            if (patientEntity is null)
             {
-                _logger.LogWarning($"Patient deletion failed. ID {id} not exists.");
-                throw new KeyNotFoundException("Patient ID not exists.");
+                _logger.LogWarning("Patient deletion failed. ID {PatientId} does not exist", id);
+                throw new NotFoundException("Patient does not exist.");
             }
 
             _unitOfWork.Patients.Delete(patientEntity);
 
             await _unitOfWork.CompleteAsync();
 
-            _logger.LogInformation($"Patient deleted successfully with ID {patientEntity.Id}");
+            _logger.LogInformation("Patient {PatientId} deleted successfully", patientEntity.Id);
 
             return true;
         }
 
-        public async Task<IReadOnlyList<PatientResponseDto>> GetAllAsync(BaseFilterDto filter)
+        public async Task<PagedResult<PatientResponseDto>> GetAllAsync(BaseFilterDto filter)
         {
-            Expression<Func<Patient,bool>>? searchPredicte = null;
+            var searchPredicate = BuildSearchPredicate(filter.SearchTerm);
 
-            if (!string.IsNullOrEmpty(filter.SearchTerm))
-            {
-                var term = filter.SearchTerm.Trim().ToLower();
-
-                searchPredicte = p => p.FullName.ToLower().Contains(term) ||
-                                      p.Phone.Contains(term)||
-                                      (p.Email != null && p.Email.ToLower().Contains(term));
-            }
-
-            var patientEntity = await _unitOfWork.Patients.GetPagedWithSpecAsync(
-                searchPredicte,
+            var patientEntities = await _unitOfWork.Patients.GetPagedWithSpecAsync(
+                searchPredicate,
                 filter.PageNumber,
-                filter.PageSize
-                );
+                filter.PageSize);
 
-            return _mapper.Map<IReadOnlyList<PatientResponseDto>>(patientEntity);
+            var totalCount = await _unitOfWork.Patients.CountAsync(searchPredicate);
 
+            return new PagedResult<PatientResponseDto>
+            {
+                Items = _mapper.Map<IReadOnlyList<PatientResponseDto>>(patientEntities),
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize,
+                TotalCount = totalCount
+            };
         }
 
         public async Task<PatientResponseDto?> GetByIdAsync(int id)
         {
-            _logger.LogInformation($"Starting Get patient for ID : {id}");
+            _logger.LogInformation("Starting get patient for ID {PatientId}", id);
 
             var patientEntity = await _unitOfWork.Patients.GetByIdWithDetailsAsync(id);
 
-            if (patientEntity == null)
+            if (patientEntity is null)
             {
-                _logger.LogWarning($"Patient not exist with ID {id}.");
-                throw new KeyNotFoundException("Patient not exists.");
+                _logger.LogWarning("Patient does not exist with ID {PatientId}", id);
+                throw new NotFoundException("Patient does not exist.");
             }
 
             var patientDto = _mapper.Map<PatientResponseDto>(patientEntity);
 
-            _logger.LogInformation($"Get Patient successfully with ID : {patientDto.Id}");
+            _logger.LogInformation("Patient {PatientId} retrieved successfully", patientDto.Id);
 
             return patientDto;
-
         }
 
-        public async Task<IReadOnlyList<PatientResponseDto>> GetPatientsWithMultipleAppointments(PaginationDto filter)
+        public async Task<PagedResult<PatientResponseDto>> GetPatientsWithMultipleAppointments(PaginationDto filter)
         {
-            Expression<Func<Patient, bool>>? searchPredicte = p => p.Appointments.Count() > 1;
+            Expression<Func<Patient, bool>> searchPredicate = p => p.Appointments.Count() > 1;
 
-            var patientEntity = await _unitOfWork.Patients.GetPagedWithSpecAsync(
-                searchPredicte,
+            var patientEntities = await _unitOfWork.Patients.GetPagedWithSpecAsync(
+                searchPredicate,
                 filter.PageNumber,
-                filter.PageSize
-                );
+                filter.PageSize);
 
-            return _mapper.Map<IReadOnlyList<PatientResponseDto>>(patientEntity);
+            var totalCount = await _unitOfWork.Patients.CountAsync(searchPredicate);
+
+            return new PagedResult<PatientResponseDto>
+            {
+                Items = _mapper.Map<IReadOnlyList<PatientResponseDto>>(patientEntities),
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize,
+                TotalCount = totalCount
+            };
         }
 
         public async Task<bool> UpdateAsync(int id, UpdatePatientDto updatePatientDto)
         {
-            _logger.LogInformation($"Starting Update patient for ID : {id}");
+            _logger.LogInformation("Starting update patient for ID {PatientId}", id);
 
             var patientEntity = await _unitOfWork.Patients.GetByIdWithDetailsAsync(id);
 
-            if (patientEntity == null)
+            if (patientEntity is null)
             {
-                _logger.LogWarning($"Patient not exist with ID {id}.");
-                throw new KeyNotFoundException("Patient not exists.");
+                _logger.LogWarning("Patient does not exist with ID {PatientId}", id);
+                throw new NotFoundException("Patient does not exist.");
             }
 
             _mapper.Map(updatePatientDto, patientEntity);
 
             await _unitOfWork.CompleteAsync();
 
-            _logger.LogInformation($"Update Patient successfully with ID : {patientEntity.Id}");
+            _logger.LogInformation("Patient {PatientId} updated successfully", patientEntity.Id);
 
             return true;
+        }
 
+        private static Expression<Func<Patient, bool>>? BuildSearchPredicate(string? searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return null;
+            }
+
+            var term = searchTerm.Trim().ToLower();
+
+            return p => p.FullName.ToLower().Contains(term) ||
+                        p.Phone.Contains(term) ||
+                        (p.Email != null && p.Email.ToLower().Contains(term));
         }
     }
 }

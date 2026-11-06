@@ -15,6 +15,9 @@
             bool isAscending,
             int pageNumber,
             int pageSize);
+
+        Task<int> CountAsync(Expression<Func<T, bool>>? predicate);
+
         Task AddAsync(T entity);
         void Update(T entity);
         void Delete(T entity);

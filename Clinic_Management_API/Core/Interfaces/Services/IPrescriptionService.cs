@@ -1,4 +1,5 @@
-﻿using Clinic_Management_API.Core.DTOs.FilterDTOs;
+﻿using Clinic_Management_API.Core.DTOs.Common;
+using Clinic_Management_API.Core.DTOs.FilterDTOs;
 using Clinic_Management_API.Core.DTOs.PrescriptionDTOs;
 
 namespace Clinic_Management_API.Core.Interfaces.Services
@@ -9,7 +10,7 @@ namespace Clinic_Management_API.Core.Interfaces.Services
         Task<bool> UpdateAsync(int id, UpdatePrescriptionDto dto);
         Task<bool> DeleteAsync(int id);
         Task<PrescriptionResponseDto?> GetByIdAsync(int id);
-        Task<IReadOnlyList<PrescriptionResponseDto>> GetAllAsync(BaseFilterDto filter);
-        Task<PrescriptionResponseDto> GetByAppointmentIdAsync(int AppointmentId);
+        Task<PagedResult<PrescriptionResponseDto>> GetAllAsync(BaseFilterDto filter);
+        Task<PrescriptionResponseDto> GetByAppointmentIdAsync(int appointmentId);
     }
 }

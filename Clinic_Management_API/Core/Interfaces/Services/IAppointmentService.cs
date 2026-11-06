@@ -1,4 +1,5 @@
 ﻿using Clinic_Management_API.Core.DTOs.AppointmentDTOs;
+using Clinic_Management_API.Core.DTOs.Common;
 using Clinic_Management_API.Core.DTOs.FilterDTOs;
 using Clinic_Management_API.Core.Enums;
 
@@ -10,7 +11,7 @@ namespace Clinic_Management_API.Core.Interfaces.Services
         Task<bool> UpdateAsync(int id, UpdateAppointmentDto dto);
         Task<bool> DeleteAsync(int id);
         Task<AppointmentResponseDto?> GetByIdAsync(int id);
-        Task<IReadOnlyList<AppointmentResponseDto>> GetAllAsync(AppointmentFilterDto filter);
+        Task<PagedResult<AppointmentResponseDto>> GetAllAsync(AppointmentFilterDto filter);
         Task<IReadOnlyList<AppointmentResponseDto>> GetDoctorAppointmentsAsync(int doctorId, DateOnly dateTime);
         Task<bool> ChangeStatusAsync(int appointmentId, AppointmentStatus status);
     }

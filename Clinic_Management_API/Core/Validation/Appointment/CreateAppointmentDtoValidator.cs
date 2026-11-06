@@ -7,23 +7,27 @@ namespace Clinic_Management_API.Core.Validation.Appointment
     {
         public CreateAppointmentDtoValidator()
         {
-            RuleFor(a => a.DoctorId).GreaterThan(0).WithMessage("Doctor Id is required");
+            RuleFor(a => a.DoctorId)
+                .GreaterThan(0).WithMessage("Doctor Id is required.");
 
-            RuleFor(a=>a.PatientId).GreaterThan(0).WithMessage("Patient Id is required");
+            RuleFor(a => a.PatientId)
+                .GreaterThan(0).WithMessage("Patient Id is required.");
 
-            RuleFor(a => a.Notes).MaximumLength(500).WithMessage("The note cannot exceed 500 characters");
+            RuleFor(a => a.Notes)
+                .MaximumLength(500).WithMessage("The note cannot exceed 500 characters.");
 
             RuleFor(a => a.StartTime)
-                .NotEmpty().WithMessage("Start Time is required")
-                .LessThan(a => a.EndTime).WithMessage("Start Time must be less than End time");
+                .Must(t => t != default).WithMessage("Start Time is required.")
+                .LessThan(a => a.EndTime).WithMessage("Start Time must be less than End Time.");
 
             RuleFor(a => a.EndTime)
-                            .NotEmpty().WithMessage("End Time is required")
-                            .GreaterThan(a => a.StartTime).WithMessage("End Time must be greater than Start time");
+                .Must(t => t != default).WithMessage("End Time is required.")
+                .GreaterThan(a => a.StartTime).WithMessage("End Time must be greater than Start Time.");
 
             RuleFor(a => a.AppointmentDate)
-                .NotEmpty().WithMessage("Appointment Date is required")
-                .GreaterThan(DateOnly.FromDateTime(DateTime.Today)).WithMessage("This Date is Expired");
+                .Must(d => d != default).WithMessage("Appointment Date is required.")
+                .GreaterThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today))
+                .WithMessage("Appointment date cannot be in the past.");
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Clinic_Management_API.Core.DTOs.AuthDTOs;
+using Clinic_Management_API.Core.Exceptions;
 using Clinic_Management_API.Core.Interfaces.Services;
 using Clinic_Management_API.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
@@ -15,30 +16,31 @@ namespace Clinic_Management_API.Core.Services
             _userManager = userManager;
             _tokenService = tokenService;
         }
+
         public async Task<AuthResponseDto> Login(LoginDto dto)
         {
             var user = dto.EmailOrUsername.Contains("@")
                 ? await _userManager.FindByEmailAsync(dto.EmailOrUsername)
                 : await _userManager.FindByNameAsync(dto.EmailOrUsername);
 
-            if (user == null || !await _userManager.CheckPasswordAsync(user,dto.Password))
+            if (user is null || !await _userManager.CheckPasswordAsync(user, dto.Password))
             {
                 return new AuthResponseDto
                 {
                     IsAuthenticated = false,
-                    Message = "Invalid Email/Username or Password"
+                    Message = "Invalid email/username or password."
                 };
             }
 
-            var token = await _tokenService.CreateTokenAsync(user, _userManager);
+            var tokenResult = await _tokenService.CreateTokenAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
 
             return new AuthResponseDto
             {
                 IsAuthenticated = true,
-                Message = "Logged in successfully",
-                Token = token,
-                ExpiresOn = DateTime.UtcNow.AddDays(7).ToString("yyyy-MM-dd HH:mm:ss"),
+                Message = "Logged in successfully.",
+                Token = tokenResult.Token,
+                ExpiresOn = tokenResult.ExpiresOnUtc,
                 Roles = roles.ToList()
             };
         }
@@ -54,29 +56,22 @@ namespace Clinic_Management_API.Core.Services
 
             var result = await _userManager.CreateAsync(user, dto.Password);
 
-            if(!result.Succeeded)
+            if (!result.Succeeded)
             {
-                var errors = string.Join(',', result.Errors.Select(e => e.Description));
-
-                return new AuthResponseDto
-                {
-                    IsAuthenticated = false,
-                    Message = errors
-                }; 
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new BadRequestException(errors);
             }
 
-
-            var token = await _tokenService.CreateTokenAsync(user, _userManager);
+            var tokenResult = await _tokenService.CreateTokenAsync(user);
 
             return new AuthResponseDto
             {
                 IsAuthenticated = true,
-                Message = "User registered successfully",
-                Token = token,
-                ExpiresOn = DateTime.UtcNow.AddDays(7).ToString("yyyy-MM-dd HH:mm:ss"),
+                Message = "User registered successfully. Assign a role to the user before they can access protected endpoints.",
+                Token = tokenResult.Token,
+                ExpiresOn = tokenResult.ExpiresOnUtc,
+                Roles = new List<string>()
             };
-
-            
         }
     }
 }
